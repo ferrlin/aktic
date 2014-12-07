@@ -13,30 +13,30 @@ case object Create extends OpType {
 }
 
 case class Index(index: String,
-               `type`: String,
-                 document: String,
-                 id: Option[String] = None,
-                 opType: Option[OpType] = None)
-  extends ESOperation with BulkSupport{
+  `type`: String,
+  document: String,
+  id: Option[String] = None,
+  opType: Option[OpType] = None)
+  extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val action = opType match {
-      case Some(Create) => "create"
-      case _ => "index"
+      case Some(Create) ⇒ "create"
+      case _ ⇒ "index"
     }
-   val actionAndMetadata = compact(render(action -> ("_index" -> index) ~ ("_type" -> `type`) ~ ("_id" -> id)))
-   s"""
+    val actionAndMetadata = compact(render(action -> ("_index" -> index) ~ ("_type" -> `type`) ~ ("_id" -> id)))
+    s"""
       |$actionAndMetadata
       |$document
-    """.stripMargin 
+    """.stripMargin
   }
 }
 
 case class Update(index: String,
-                  `type`: String,
-                  document: String,
-                  id: String,
-                  version: Option[Int] = None)
-  extends ESOperation with BulkSupport{
+  `type`: String,
+  document: String,
+  id: String,
+  version: Option[Int] = None)
+  extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val actionAndMetadata = compact(render("update" -> ("_index" -> index) ~ ("_type" -> `type`) ~ ("_id" -> id)))
     val doc = s""" {"doc": $document} """
@@ -47,7 +47,7 @@ case class Update(index: String,
   }
 }
 
-case class Delete(index: String, `type`: String, id: String) extends ESOperation with BulkSupport{
+case class Delete(index: String, `type`: String, id: String) extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val actionAndMetadata = compact(render("delete" -> ("_index" -> index) ~ ("_type" -> `type`) ~ ("_id" -> id)))
     s"""

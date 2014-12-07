@@ -42,6 +42,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % akka % "test",
   "com.typesafe.akka" %% "akka-actor" % akka,
   "com.typesafe.akka" %% "akka-slf4j" % akka,
+  "io.argonaut" %% "argonaut" % "6.0.4",
   "io.spray" %% "spray-routing" % spray,
   "io.spray" %% "spray-client" % spray,
   "io.spray" %% "spray-testkit" % spray % "test",
