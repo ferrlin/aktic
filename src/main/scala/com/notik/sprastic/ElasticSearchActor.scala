@@ -3,7 +3,8 @@ package com.notik.sprastic
 import akka.actor.{ Props, ActorRef, Actor }
 import akka.io.IO
 import spray.can.Http
-import spray.client.pipelining.sendTo
+import spray.client.pipelining._
+// import spray.client.pipelining.sendTo
 import spray.http._
 import com.typesafe.config.{ ConfigFactory, Config }
 import com.notik.sprastic.api._
@@ -54,27 +55,31 @@ private[this] class Worker(io: ActorRef, target: ActorRef, host: String, port: I
         case Some(i) ⇒ s"$baseUri/$i${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
         case None ⇒ s"$baseUri${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
       }
-      val request = HttpRequest(method = id.fold(HttpMethods.POST)(_ ⇒ HttpMethods.PUT),
+      val request = HttpRequest(
+        method = id.fold(HttpMethods.POST)(_ ⇒ HttpMethods.PUT),
         uri = effectiveUri,
         entity = HttpEntity(data))
       sendTo(io).withResponsesReceivedBy(self)(request)
       become(responseReceive)
 
     case Update(index, t, data, id, version) ⇒
-      val request = HttpRequest(method = HttpMethods.PUT,
+      val request = HttpRequest(
+        method = HttpMethods.PUT,
         uri = Uri(s"http://$host:$port/$index/$t/$id${version.fold("")(v ⇒ s"?version=$v")}"),
         entity = HttpEntity(data))
       sendTo(io).withResponsesReceivedBy(self)(request)
       become(responseReceive)
 
     case Get(index, t, id) ⇒
-      val request = HttpRequest(method = HttpMethods.GET,
+      val request = HttpRequest(
+        method = HttpMethods.GET,
         uri = Uri(s"http://$host:$port/$index/$t/$id"))
       sendTo(io).withResponsesReceivedBy(self)(request)
       become(responseReceive)
 
     case Delete(index, t, id) ⇒
-      val request = HttpRequest(method = HttpMethods.DELETE,
+      val request = HttpRequest(
+        method = HttpMethods.DELETE,
         uri = Uri(s"http://$host:$port/$index/$t/$id"))
       sendTo(io).withResponsesReceivedBy(self)(request)
       become(responseReceive)
@@ -87,7 +92,10 @@ private[this] class Worker(io: ActorRef, target: ActorRef, host: String, port: I
 
     case Bulk(ops) ⇒
       val json = ops.map(_.bulkJson).mkString("\n")
-      val request = HttpRequest(method = HttpMethods.POST, uri = Uri(s"http://$host:$port/_bulk"), entity = HttpEntity(json))
+      val request = HttpRequest(
+        method = HttpMethods.POST,
+        uri = Uri(s"http://$host:$port/_bulk"),
+        entity = HttpEntity(json))
       sendTo(io).withResponsesReceivedBy(self)(request)
       become(responseReceive)
   }
