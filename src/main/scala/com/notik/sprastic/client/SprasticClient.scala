@@ -2,6 +2,7 @@ package com.notik.sprastic.client
 
 import akka.actor.{ ActorSystem, ActorRefFactory, ActorRef }
 import com.notik.sprastic.ElasticSearchActor
+import com.notik.sprastic.ESActor
 import com.typesafe.config.{ ConfigFactory, Config }
 import com.notik.sprastic.api.ESOperation
 import scala.concurrent.Future
@@ -14,17 +15,22 @@ class SprasticClient(config: Config = SprasticConfig.defaultConfig) {
   import akka.pattern.ask
   val system: ActorSystem = ActorSystem("sprastic-actor-system")
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse] =
-    system.actorOf(ElasticSearchActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[HttpResponse]
+    system.actorOf(ESActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[HttpResponse]
+  // system.actorOf(ElasticSearchActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[HttpResponse]
   def shutdown() = system.shutdown()
 }
 
 object SprasticClient {
 
+  // def apply(actorRefFactory: ActorRefFactory): ActorRef =
+  // actorRefFactory.actorOf(ElasticSearchActor.props())
   def apply(actorRefFactory: ActorRefFactory): ActorRef =
-    actorRefFactory.actorOf(ElasticSearchActor.props())
+    actorRefFactory.actorOf(ESActor.props())
 
+  // def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef =
+  // actorRefFactory.actorOf(ElasticSearchActor.props(config))
   def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef =
-    actorRefFactory.actorOf(ElasticSearchActor.props(config))
+    actorRefFactory.actorOf(ESActor.props(config))
 
   def apply(config: Config): SprasticClient = new SprasticClient(config)
 

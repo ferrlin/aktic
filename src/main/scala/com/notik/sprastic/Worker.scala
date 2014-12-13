@@ -1,7 +1,6 @@
 package com.notik.sprastic
 
 import akka.actor.{ Actor, Props, ActorRef }
-// import spray.httpx.RequestBuilding._
 import com.notik.sprastic.api.MultiGet
 import com.notik.sprastic.api.{ Get ⇒ ESGet }
 import com.notik.sprastic.api.Index
