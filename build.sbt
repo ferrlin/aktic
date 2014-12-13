@@ -46,6 +46,7 @@ libraryDependencies ++= Seq(
   "io.spray" %% "spray-httpx" % spray,
   "io.spray" %% "spray-routing" % spray,
   "io.spray" %% "spray-client" % spray,
+  "io.spray" %% "spray-can" % spray,
   "io.spray" %% "spray-testkit" % spray % "test",
   "org.json4s" %% "json4s-jackson" % "3.2.9",
   "com.typesafe" % "config" % "1.2.0")
