@@ -22,7 +22,7 @@ class SprasticClient(config: Config = SprasticConfig.defaultConfig) {
 
 object SprasticClient {
 
-  // def apply(actorRefFactory: ActorRefFactory): ActorRef =
+    // def apply(actorRefFactory: ActorRefFactory): ActorRef =
   // actorRefFactory.actorOf(ElasticSearchActor.props())
   def apply(actorRefFactory: ActorRefFactory): ActorRef =
     actorRefFactory.actorOf(ESActor.props())

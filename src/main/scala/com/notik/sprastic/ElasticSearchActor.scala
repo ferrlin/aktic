@@ -2,10 +2,9 @@ package com.notik.sprastic
 
 import akka.actor.{ Props, ActorRef, Actor }
 import akka.io.IO
-import akka.pattern.ask
-import akka.util.Timeout
 import spray.can.Http
 import spray.client.pipelining._
+// import spray.client.pipelining.sendTo
 import spray.http._
 import com.typesafe.config.{ ConfigFactory, Config }
 import com.notik.sprastic.api._
@@ -19,33 +18,6 @@ import com.notik.sprastic.api.Delete
 import com.notik.sprastic.api.Docs
 import spray.http.HttpResponse
 import com.notik.sprastic.config.SprasticConfig
-import scala.concurrent.duration._
-import scala.concurrent.Future
-
-class ESActor(config: Config) extends Actor {
-  import context.dispatcher
-
-  implicit val system = context.system
-
-  implicit val timeout: Timeout = 2 minutes
-
-  val pipeline: Future[SendReceive] =
-    for (
-      Http.HostConnectorInfo(connector, _) ← IO(Http) ? Http.HostConnectorSetup("localhost", port = 9200)
-    ) yield sendReceive(connector)
-
-  def receive = {
-    case Response(httpResponse, target) ⇒
-      target ! httpResponse
-    case msg ⇒
-      context.actorOf(Worker2.props(pipeline, sender)) ! msg
-  }
-}
-
-object ESActor {
-  def props(config: Config = SprasticConfig.defaultConfig): Props = Props(new ESActor(config))
-  case class Response(httpResponse: HttpResponse, target: ActorRef)
-}
 
 class ElasticSearchActor(config: Config) extends Actor {
 
@@ -65,6 +37,7 @@ object ElasticSearchActor {
   def props(config: Config = SprasticConfig.defaultConfig): Props = Props(new ElasticSearchActor(config))
   case class Response(httpResponse: HttpResponse, target: ActorRef)
 }
+
 
 private[this] class Worker(io: ActorRef, target: ActorRef, host: String, port: Int) extends Actor {
 
