@@ -1,13 +1,13 @@
 package com.notik.sprastic
 
 import akka.actor.{ Actor, Props, ActorRef }
-import com.notik.sprastic.api.MultiGet
-import com.notik.sprastic.api.{ APIGet ⇒ ESGet }
-import com.notik.sprastic.api.Index
-import com.notik.sprastic.api.Update
-import com.notik.sprastic.api.{ APIDelete ⇒ ESDelete }
+import com.notik.sprastic.api.ESMultiGet
+import com.notik.sprastic.api.ESGet
+import com.notik.sprastic.api.ESIndex
+import com.notik.sprastic.api.ESUpdate
+import com.notik.sprastic.api.ESDelete
 import com.notik.sprastic.api.Docs
-import com.notik.sprastic.api.Bulk
+import com.notik.sprastic.api.ESBulk
 import spray.http.{ HttpRequest, HttpResponse }
 import com.notik.sprastic.ESActor.Response
 import scala.concurrent.Future
@@ -18,28 +18,27 @@ class Worker2(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
   import context._
 
   def receive = {
-    case Index(index, t, data, id, opType) ⇒
-      // sendRequest(Put(s"/$index/$t/$uri", data))
+    case i @ ESIndex(index, t, data, id, opType) ⇒
+      sendRequest(i.httpRequest)
       become(responseReceive)
-    case Update(index, t, data, id, version) ⇒
-      sendRequest(Post(s"/$index/$t/$id${version.fold("")(v ⇒ s"?version=$v")}", data))
+    case up @ ESUpdate(index, t, data, id, version) ⇒
+      sendRequest(up.httpRequest)
       become(responseReceive)
-    case ESGet(index, t, id) ⇒
-      sendRequest(Get(s"/$index/$t/$id"))
+    case get @ ESGet(index, t, id) ⇒
+      sendRequest(get.httpRequest)
       become(responseReceive)
-    case ESDelete(index, t, id) ⇒
-      sendRequest(Delete(s"/$index/$t/$id"))
+    case del @ ESDelete(index, t, id) ⇒
+      sendRequest(del.httpRequest)
       become(responseReceive)
-    case MultiGet(docs) ⇒
-    // pipeline(Get(s"", data))
-    case Bulk(ops) ⇒
-      val json = ops.map(_.bulkJson).mkString("\n")
-      sendRequest(Post("/_bulk", json))
+    case muget @ ESMultiGet(docs) ⇒
+      sendRequest(muget.httpRequest)
+    case bulk @ ESBulk(ops) ⇒
+      sendRequest(bulk.httpRequest)
       become(responseReceive)
   }
 
-  def sendRequest(req: HttpRequest) =
-    pipeline flatMap (_(req))
+  def sendRequest(req: Option[HttpRequest]) =
+    pipeline flatMap (_(req.get))
 
   def responseReceive: Receive = {
     case response: HttpResponse ⇒

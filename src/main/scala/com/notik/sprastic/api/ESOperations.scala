@@ -46,7 +46,7 @@ case object Create extends OpType {
   override def value: String = "create"
 }
 
-case class Index(index: String,
+case class ESIndex(index: String,
   t: String,
   document: String,
   id: Option[String] = None,
@@ -76,7 +76,7 @@ case class Index(index: String,
   }
 }
 
-case class Update(index: String,
+case class ESUpdate(index: String,
   typ: String,
   document: String,
   id: String,
@@ -93,7 +93,7 @@ case class Update(index: String,
   def httpRequest = Some(Post(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document))
 }
 
-case class APIDelete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
+case class ESDelete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val actionAndMetadata = compact(render("delete" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
     s"""
@@ -103,11 +103,11 @@ case class APIDelete(index: String, typ: String, id: String) extends ESOperation
   def httpRequest = Some(Delete(s"/$index/$typ/$id"))
 }
 
-case class MultiGet(docs: Seq[Doc]) extends ESOperation{
+case class ESMultiGet(docs: Seq[Doc]) extends ESOperation {
   def httpRequest = None
 }
 
-case class APIGet(index: String, typ: String, id: String) extends ESOperation {
+case class ESGet(index: String, typ: String, id: String) extends ESOperation {
   def httpRequest = Some(Get(s"/$index/$typ/$id"))
 }
 
@@ -115,6 +115,7 @@ sealed trait BulkSupport {
   def bulkJson: String
 }
 
-case class Bulk(actions: Seq[BulkSupport]) {
-  def httpRequest = Some(Post("/_bulk"))
+case class ESBulk(actions: Seq[BulkSupport]) {
+  lazy val json = actions.map(_.bulkJson).mkString("\n")
+  def httpRequest = Some(Post("/_bulk", json))
 }
