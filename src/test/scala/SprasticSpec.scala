@@ -36,7 +36,7 @@ class ESOperationsSpec extends UnitSpec {
 		          }
 		  }
 		  """
-        val indexMsg = Index(index, t, doc, None, opType)
+        val indexMsg = ESIndex(index, t, doc, None, opType)
 
         val uri = s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
         indexMsg.httpRequest.value should be(Post(s"/$index/$t/$uri", doc))
@@ -68,7 +68,7 @@ class ESOperationsSpec extends UnitSpec {
 		          }
 		  }
 		  """
-        val indexMsg = Index(index, t, doc, x, opType)
+        val indexMsg = ESIndex(index, t, doc, x, opType)
         val Some(sx) = x
         val uri = s"$sx${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
         indexMsg.httpRequest.value should be(Put(s"/$index/$t/$uri", doc))

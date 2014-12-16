@@ -104,7 +104,7 @@ case class ESDelete(index: String, typ: String, id: String) extends ESOperation 
 }
 
 case class ESMultiGet(docs: Seq[Doc]) extends ESOperation {
-  def httpRequest = None
+  def httpRequest = Some(Get("/_mget"))
 }
 
 case class ESGet(index: String, typ: String, id: String) extends ESOperation {
