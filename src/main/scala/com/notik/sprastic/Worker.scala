@@ -1,19 +1,13 @@
 package com.notik.sprastic
 
 import akka.actor.{ Actor, Props, ActorRef }
-import com.notik.sprastic.api.ESMultiGet
-import com.notik.sprastic.api.ESGet
-import com.notik.sprastic.api.ESIndex
-import com.notik.sprastic.api.ESUpdate
-import com.notik.sprastic.api.ESDelete
-import com.notik.sprastic.api.Docs
-import com.notik.sprastic.api.ESBulk
+import com.notik.sprastic.api._
 import spray.http.{ HttpRequest, HttpResponse }
 import com.notik.sprastic.ESActor.Response
 import scala.concurrent.Future
 import spray.client.pipelining._
 
-class Worker2(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
+class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
 
   import context._
 
@@ -46,7 +40,7 @@ class Worker2(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
   }
 }
 
-object Worker2 {
+object Worker {
   def props(pipeline: Future[SendReceive], target: ActorRef) =
-    Props(new Worker2(pipeline, target))
+    Props(new Worker(pipeline, target))
 }

@@ -29,10 +29,10 @@ class ESActor(config: Config) extends Actor {
     ) yield sendReceive(connector)
 
   def receive = {
-    case Response(httpsResponse, target) ⇒
-      target ! httpsResponse
+    case Response(httpResponse, target) ⇒
+      target ! httpResponse
     case msg ⇒
-      context.actorOf(Worker2.props(pipeline, sender)) ! msg
+      context.actorOf(Worker.props(pipeline, sender)) ! msg
   }
 }
 
