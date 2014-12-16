@@ -38,7 +38,8 @@ val akka = "2.3.2"
 val spray = "1.3.2"
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.1.3" % "test", "ch.qos.logback" % "logback-classic" % "1.1.2",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "ch.qos.logback" % "logback-classic" % "1.1.2",
   "com.typesafe.akka" %% "akka-testkit" % akka % "test",
   "com.typesafe.akka" %% "akka-actor" % akka,
   "com.typesafe.akka" %% "akka-slf4j" % akka,

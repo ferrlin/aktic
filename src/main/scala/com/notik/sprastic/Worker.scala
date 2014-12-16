@@ -19,14 +19,10 @@ class Worker2(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
 
   def receive = {
     case Index(index, t, data, id, opType) ⇒
-      val uri = id match {
-        case Some(x) ⇒ s"/$x${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
-        case None ⇒ s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
-      }
-      sendRequest(Post(s"/$index/$t", data))
+      // sendRequest(Put(s"/$index/$t/$uri", data))
       become(responseReceive)
     case Update(index, t, data, id, version) ⇒
-      sendRequest(Put(s"/$index/$t/$id${version.fold("")(v ⇒ s"?version=$v")}", data))
+      sendRequest(Post(s"/$index/$t/$id${version.fold("")(v ⇒ s"?version=$v")}", data))
       become(responseReceive)
     case ESGet(index, t, id) ⇒
       sendRequest(Get(s"/$index/$t/$id"))

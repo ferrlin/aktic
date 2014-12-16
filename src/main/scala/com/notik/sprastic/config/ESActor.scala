@@ -3,9 +3,7 @@ package com.notik.sprastic
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util._
-
 import com.typesafe.config.{ Config }
-
 import akka.actor.{ Actor, Props, ActorRef }
 import akka.io.IO
 import akka.pattern.ask

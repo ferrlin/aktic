@@ -8,7 +8,6 @@ object Examples extends App {
 
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
-  // implicit val timeout: FiniteDuration = 10.seconds
   implicit val timeout: FiniteDuration = 5 minutes
 
   import scala.util.{ Success, Failure }
@@ -21,9 +20,10 @@ object Examples extends App {
   */
 
   client.execute(Delete("members", "member", ""))
+  // client.execute(Index(""))
   val doc = """
   {
-  	"member":{
+    "member":{
             "name" : {"type": "string", "index": "not_analyzed"},
             "age" : {"type": "integer"},
             "properties":{
@@ -38,5 +38,5 @@ object Examples extends App {
           }
   }
   """
-  client.execute(Index("members", "member", doc, None, Some(Create)))
+  // client.execute(Index("members", "member", doc, None, Some(Create)))
 }
