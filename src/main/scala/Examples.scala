@@ -19,7 +19,7 @@ object Examples extends App {
   }
   */
 
-  client.execute(Delete("members", "member", ""))
+  client.execute(APIDelete("members", "member", ""))
   // client.execute(Index(""))
   val doc = """
   {

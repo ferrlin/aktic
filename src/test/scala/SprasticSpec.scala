@@ -14,7 +14,7 @@ class ESOperationsSpec extends UnitSpec {
   import spray.httpx.RequestBuilding._
 
   "The Index case class" - {
-    "when populated without an Id and criteria below" - {
+    "when populated without an Id and criteria ie index=members;type=member;opType=Create" - {
       "should have this json value" in {
         val index = "members"
         val t = "member"
@@ -39,13 +39,13 @@ class ESOperationsSpec extends UnitSpec {
         val indexMsg = Index(index, t, doc, None, opType)
 
         val uri = s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
-        indexMsg.toHttpRequest.value should be(Post(s"/$index/$t/$uri", doc))
+        indexMsg.httpRequest.value should be(Post(s"/$index/$t/$uri", doc))
       }
     }
   }
 
   "The Index case class" - {
-    "when populated with an Id of 123 and criteria below" - {
+    "when populated with an Id of 123 and criteria ie index=members;type=member;opType=Create" - {
       "should have this json value" in {
         val index = "members"
         val t = "member"
@@ -71,7 +71,7 @@ class ESOperationsSpec extends UnitSpec {
         val indexMsg = Index(index, t, doc, x, opType)
         val Some(sx) = x
         val uri = s"$sx${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
-        indexMsg.toHttpRequest.value should be(Put(s"/$index/$t/$uri", doc))
+        indexMsg.httpRequest.value should be(Put(s"/$index/$t/$uri", doc))
       }
     }
   }

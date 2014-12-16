@@ -1,7 +1,6 @@
 package com.notik.sprastic.client
 
 import akka.actor.{ ActorSystem, ActorRefFactory, ActorRef }
-import com.notik.sprastic.ElasticSearchActor
 import com.notik.sprastic.ESActor
 import com.typesafe.config.{ ConfigFactory, Config }
 import com.notik.sprastic.api.ESOperation
@@ -22,7 +21,7 @@ class SprasticClient(config: Config = SprasticConfig.defaultConfig) {
 
 object SprasticClient {
 
-    // def apply(actorRefFactory: ActorRefFactory): ActorRef =
+  // def apply(actorRefFactory: ActorRefFactory): ActorRef =
   // actorRefFactory.actorOf(ElasticSearchActor.props())
   def apply(actorRefFactory: ActorRefFactory): ActorRef =
     actorRefFactory.actorOf(ESActor.props())

@@ -2,10 +2,10 @@ package com.notik.sprastic
 
 import akka.actor.{ Actor, Props, ActorRef }
 import com.notik.sprastic.api.MultiGet
-import com.notik.sprastic.api.{ Get ⇒ ESGet }
+import com.notik.sprastic.api.{ APIGet ⇒ ESGet }
 import com.notik.sprastic.api.Index
 import com.notik.sprastic.api.Update
-import com.notik.sprastic.api.{ Delete ⇒ ESDelete }
+import com.notik.sprastic.api.{ APIDelete ⇒ ESDelete }
 import com.notik.sprastic.api.Docs
 import com.notik.sprastic.api.Bulk
 import spray.http.{ HttpRequest, HttpResponse }
