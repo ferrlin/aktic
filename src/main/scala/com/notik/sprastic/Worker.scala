@@ -26,6 +26,7 @@ class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
       become(responseReceive)
     case muget @ ESMultiGet(docs) ⇒
       sendRequest(muget.httpRequest)
+      become(responseReceive)
     case bulk @ ESBulk(ops) ⇒
       sendRequest(bulk.httpRequest)
       become(responseReceive)

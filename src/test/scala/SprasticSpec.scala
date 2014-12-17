@@ -75,4 +75,30 @@ class ESOperationsSpec extends UnitSpec {
       }
     }
   }
+
+  "The ES Get operation" - {
+    "when populated with index=members; type=member ; id=5478" - {
+      "should yield the expected HTTP request with Get verb" in {
+        val index = "members"
+        val typ = "member"
+        val id = "5478"
+
+        val getMsg = ESGet(index, typ, id)
+
+        getMsg.httpRequest should be(Get(s"/$index/$typ/$id"))
+      }
+    }
+  }
+  "The ES Delete operation" - {
+    "when populated with index=members; type=member ; id=5478" - {
+      "should yield the expected HTTP request with Delete verb" in {
+        val index = "members"
+        val typ = "member"
+        val id = "5478"
+
+        val delMsg = ESDelete(index, typ, id)
+        delMsg.httpRequest should be(Delete(s"/$index/$typ/$id"))
+      }
+    }
+  }
 }
