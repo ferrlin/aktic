@@ -1,7 +1,12 @@
 package com.notik.sprastic
 
 import akka.actor.{ Actor, Props, ActorRef }
-import com.notik.sprastic.api._
+import com.notik.sprastic.api.{ Index ⇒ ESIndex }
+import com.notik.sprastic.api.{ Update ⇒ ESUpdate }
+import com.notik.sprastic.api.{ Get ⇒ ESGet }
+import com.notik.sprastic.api.{ Delete ⇒ ESDelete }
+import com.notik.sprastic.api.{ MultiGet ⇒ ESMultiGet }
+import com.notik.sprastic.api.{ Bulk ⇒ ESBulk }
 import spray.http.{ HttpRequest, HttpResponse }
 import com.notik.sprastic.ESActor.Response
 import scala.concurrent.Future

@@ -10,7 +10,10 @@ abstract class UnitSpec extends FreeSpec
   with Inspectors
 
 class ESOperationsSpec extends UnitSpec {
-  import com.notik.sprastic.api._
+  import com.notik.sprastic.api.{ Index ⇒ ESIndex }
+  import com.notik.sprastic.api.{ Delete ⇒ ESDelete }
+  import com.notik.sprastic.api.{ Get ⇒ ESGet }
+  import com.notik.sprastic.api.Create
   import spray.httpx.RequestBuilding._
 
   "The Index case class" - {

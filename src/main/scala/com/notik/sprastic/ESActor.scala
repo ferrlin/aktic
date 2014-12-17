@@ -21,7 +21,7 @@ class ESActor(config: Config) extends Actor {
   import context.dispatcher
 
   implicit val system = context.system
-  implicit val timeout: Timeout = 10 minutes
+  implicit val timeout = Timeout(10.minutes)
 
   val pipeline: Future[SendReceive] =
     for (

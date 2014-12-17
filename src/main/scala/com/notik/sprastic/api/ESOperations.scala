@@ -3,7 +3,10 @@ package com.notik.sprastic.api
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
-import spray.httpx.RequestBuilding._
+import spray.httpx.RequestBuilding.{ Put ⇒ SPut }
+import spray.httpx.RequestBuilding.{ Post ⇒ SPost }
+import spray.httpx.RequestBuilding.{ Get ⇒ SGet }
+import spray.httpx.RequestBuilding.{ Delete ⇒ SDelete }
 import spray.http.HttpRequest
 
 sealed trait ESOperation {
@@ -17,7 +20,7 @@ case object Create extends OpType {
   override def value: String = "create"
 }
 
-case class ESIndex(index: String,
+case class Index(index: String,
   t: String,
   document: String,
   id: Option[String] = None,
@@ -42,12 +45,12 @@ case class ESIndex(index: String,
   }
 
   def httpRequest = id match {
-    case Some(_) ⇒ Put(s"/$index/$t/$uri", document)
-    case _ ⇒ Post(s"/$index/$t/$uri", document)
+    case Some(_) ⇒ SPut(s"/$index/$t/$uri", document)
+    case _ ⇒ SPost(s"/$index/$t/$uri", document)
   }
 }
 
-case class ESUpdate(index: String,
+case class Update(index: String,
   typ: String,
   document: String,
   id: String,
@@ -61,32 +64,32 @@ case class ESUpdate(index: String,
       |$doc
     """.stripMargin
   }
-  def httpRequest = Post(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
+  def httpRequest = SPost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
-case class ESDelete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
+case class Delete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val actionAndMetadata = compact(render("delete" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
     s"""
       |$actionAndMetadata
     """.stripMargin
   }
-  def httpRequest = Delete(s"/$index/$typ/$id")
+  def httpRequest = SDelete(s"/$index/$typ/$id")
 }
 
-case class ESMultiGet(docs: Seq[Doc]) extends ESOperation {
-  def httpRequest = Get("/_mget")
+case class MultiGet(docs: Seq[Doc]) extends ESOperation {
+  def httpRequest = SGet("/_mget")
 }
 
-case class ESGet(index: String, typ: String, id: String) extends ESOperation {
-  def httpRequest = Get(s"/$index/$typ/$id")
+case class Get(index: String, typ: String, id: String) extends ESOperation {
+  def httpRequest = SGet(s"/$index/$typ/$id")
 }
 
 sealed trait BulkSupport {
   def bulkJson: String
 }
 
-case class ESBulk(actions: Seq[BulkSupport]) {
+case class Bulk(actions: Seq[BulkSupport]) {
   lazy val json = actions.map(_.bulkJson).mkString("\n")
-  def httpRequest = Post("/_bulk", json)
+  def httpRequest = SPost("/_bulk", json)
 }

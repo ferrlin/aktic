@@ -39,6 +39,6 @@ object Examples extends App {
   }
   """
   0 until 1000 foreach {
-    i ⇒ client.execute(ESIndex("members", "member", doc, None, Some(Create)))
+    i ⇒ client.execute(Index("members", "member", doc, None, Some(Create)))
   }
 }
