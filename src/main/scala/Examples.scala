@@ -19,7 +19,7 @@ object Examples extends App {
   }
   */
 
-  client.execute(ESDelete("members", "member", ""))
+  // client.execute(ESDelete("members", "member", "AUpXMedBq1KEz3oafKIL"))
   // client.execute(Index(""))
   val doc = """
   {
@@ -38,5 +38,7 @@ object Examples extends App {
           }
   }
   """
-  // client.execute(Index("members", "member", doc, None, Some(Create)))
+  0 until 1000 foreach {
+    i ⇒ client.execute(ESIndex("members", "member", doc, None, Some(Create)))
+  }
 }

@@ -3,40 +3,11 @@ package com.notik.sprastic.api
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
-/** Elastic Search responses */
-sealed trait Response {
-  def index: Option[String] = None
-  def `type`: Option[String] = None
-  def id: Option[String] = None
-  def version: Option[Int] = None
-}
-/* For Update Response, the created is expected to be `false`*/
-case object ES_Index extends Response {
-  def created: Option[Boolean] = None
-}
-sealed trait Found {
-  def found: Option[Boolean]
-}
-case object ES_Retrieve extends Response with Found {
-  def found: Option[Boolean] = None
-  def source: Option[String] = None
-}
-case object ES_Delete extends Response with Found {
-  def found: Option[Boolean] = None
-}
-
-case object ES_Error extends Response {
-  def error: Option[String] = None
-  def status: Option[Int] = None
-}
-
 import spray.httpx.RequestBuilding._
 import spray.http.HttpRequest
 
-sealed trait ES_API
-
 sealed trait ESOperation {
-  def httpRequest: Option[HttpRequest]
+  def httpRequest: HttpRequest
 }
 
 sealed trait OpType {
@@ -70,9 +41,9 @@ case class ESIndex(index: String,
     case None ⇒ s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
   }
 
-  def httpRequest: Option[HttpRequest] = id match {
-    case Some(_) ⇒ Some(Put(s"/$index/$t/$uri", document))
-    case _ ⇒ Some(Post(s"/$index/$t/$uri", document))
+  def httpRequest = id match {
+    case Some(_) ⇒ Put(s"/$index/$t/$uri", document)
+    case _ ⇒ Post(s"/$index/$t/$uri", document)
   }
 }
 
@@ -90,7 +61,7 @@ case class ESUpdate(index: String,
       |$doc
     """.stripMargin
   }
-  def httpRequest = Some(Post(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document))
+  def httpRequest = Post(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
 case class ESDelete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
@@ -100,15 +71,15 @@ case class ESDelete(index: String, typ: String, id: String) extends ESOperation 
       |$actionAndMetadata
     """.stripMargin
   }
-  def httpRequest = Some(Delete(s"/$index/$typ/$id"))
+  def httpRequest = Delete(s"/$index/$typ/$id")
 }
 
 case class ESMultiGet(docs: Seq[Doc]) extends ESOperation {
-  def httpRequest = Some(Get("/_mget"))
+  def httpRequest = Get("/_mget")
 }
 
 case class ESGet(index: String, typ: String, id: String) extends ESOperation {
-  def httpRequest = Some(Get(s"/$index/$typ/$id"))
+  def httpRequest = Get(s"/$index/$typ/$id")
 }
 
 sealed trait BulkSupport {
@@ -117,5 +88,5 @@ sealed trait BulkSupport {
 
 case class ESBulk(actions: Seq[BulkSupport]) {
   lazy val json = actions.map(_.bulkJson).mkString("\n")
-  def httpRequest = Some(Post("/_bulk", json))
+  def httpRequest = Post("/_bulk", json)
 }

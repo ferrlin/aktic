@@ -31,8 +31,8 @@ class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
       become(responseReceive)
   }
 
-  def sendRequest(req: Option[HttpRequest]) =
-    pipeline flatMap (_(req.get))
+  def sendRequest(req: HttpRequest) =
+    pipeline flatMap (_(req))
 
   def responseReceive: Receive = {
     case response: HttpResponse ⇒
