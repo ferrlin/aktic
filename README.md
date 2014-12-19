@@ -12,6 +12,12 @@ There are two ways to use the client.
 ```scala
 val client = SprasticClient(context) // <-- this is just an ActorRef 
 client ! Get("twitter", "tweet", "1")
+
+
+// shoule be like this
+SprasticClient(context) get {
+("twitter", "tweet", "1")
+}
 ```
 
 If you're using the ActorRef way, the "client" can be created millions of times if need be since it's simply creating a new Actor.

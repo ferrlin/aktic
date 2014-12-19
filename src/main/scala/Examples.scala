@@ -13,15 +13,13 @@ object Examples extends App {
   import scala.util.{ Success, Failure }
   import com.notik.sprastic.api._
 
-  /*  client.execute(Get("twitter", "tweet", "1")) onComplete {
-    case Success(response) ⇒ println(response)
-    case Failure(failure) ⇒ println(failure)
+  // Retrieving a document
+  client.get("twitter", "tweet", "1") onComplete {
+    case Success(response) ⇒ // do something with the response
+    case Failure(ex) ⇒ // do nothing
   }
-  */
 
-  // client.execute(ESDelete("members", "member", "AUpXMedBq1KEz3oafKIL"))
-  // client.execute(Index(""))
-  val doc = """
+  val data = """
   {
     "member":{
             "name" : {"type": "string", "index": "not_analyzed"},
@@ -38,7 +36,15 @@ object Examples extends App {
           }
   }
   """
-  0 until 1000 foreach {
-    i ⇒ client.execute(Index("members", "member", doc, None, Some(Create)))
+  // Indexing a document
+  client.index("members", "member", data) onComplete {
+    case Success(response) ⇒ // do something with the response
+    case Failure(ex) ⇒ // do nothing
+  }
+  val id = "some arbitrary value"
+  // Deleting a document
+  client.delete("members", "member", id) onComplete {
+    case Success(resp) ⇒ // do someting with the response
+    case Failure(ex) ⇒ // do nothing
   }
 }
