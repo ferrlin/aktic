@@ -13,17 +13,14 @@ import com.notik.sprastic.config.SprasticConfig
 trait ApiService {
   import scala.concurrent.duration._
   implicit val timeout: FiniteDuration = 10 seconds
-  
-  def get(index: String, typ: String, id: String): Future[HttpResponse] = {
-    execute(Get(index, typ, id))
-  }
-  def delete(index: String, typ: String, id: String): Future[HttpResponse] = {
-    execute(Delete(index, typ, id))
-  }
-  def index(index: String, typ: String, document: String,
-    id: Option[String] = None) = {
+
+  def get: (String, String, String) ⇒ Future[HttpResponse] = (index, typ, id) ⇒ execute(Get(index, typ, id))
+
+  def delete: (String, String, String) ⇒ Future[HttpResponse] = (index, typ, id) ⇒ execute(Delete(index, typ, id))
+
+  def index(index: String, typ: String, document: String, id: Option[String] = None) =
     execute(Index(index, typ, document, id))
-  }
+    
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse]
 }
 
