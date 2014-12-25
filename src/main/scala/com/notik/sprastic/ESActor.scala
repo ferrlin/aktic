@@ -17,27 +17,27 @@ import com.notik.sprastic.config.SprasticConfig
 
 class ESActor(config: Config) extends Actor {
 
-  import ESActor._
-  import context.dispatcher
+	import ESActor._
+	import context.dispatcher
 
-  implicit val system = context.system
-  implicit val timeout = Timeout(10.minutes)
+	implicit val system = context.system
+	implicit val timeout = Timeout(10.minutes)
 
-  val pipeline: Future[SendReceive] =
-    for (
-      Http.HostConnectorInfo(connector, _) ← IO(Http) ? Http.HostConnectorSetup("localhost", port = 9200)
-    ) yield sendReceive(connector)
+	val pipeline: Future[SendReceive] =
+		for (
+			Http.HostConnectorInfo(connector, _) ← IO(Http) ? Http.HostConnectorSetup("localhost", port = 9200)
+		) yield sendReceive(connector)
 
-  def receive = {
-    case Response(httpResponse, target) ⇒
-      target ! httpResponse
-    case msg ⇒
-      context.actorOf(Worker.props(pipeline, sender)) ! msg
-  }
+	def receive = {
+		case Response(httpResponse, target) ⇒
+			target ! httpResponse
+		case msg ⇒
+			context.actorOf(Worker.props(pipeline, sender)) ! msg
+	}
 }
 
 object ESActor {
-  def props(config: Config = SprasticConfig.defaultConfig): Props =
-    Props(new ESActor(config))
-  case class Response(httpResponse: HttpResponse, target: ActorRef)
+	def props(config: Config = SprasticConfig.defaultConfig): Props =
+		Props(new ESActor(config))
+	case class Response(httpResponse: HttpResponse, target: ActorRef)
 }

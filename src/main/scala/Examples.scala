@@ -1,11 +1,9 @@
 package com.notik.sprastic
 
 import com.notik.sprastic.client._
+// import 
 
 object Examples extends App {
-
-  val client = SprasticClient()
-
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
   implicit val timeout: FiniteDuration = 5 minutes
@@ -13,11 +11,16 @@ object Examples extends App {
   import scala.util.{ Success, Failure }
   import com.notik.sprastic.api._
 
+  val client = SprasticClient()
   // Retrieving a document
   client.get("twitter", "tweet", "1") onComplete {
-    case Success(response) ⇒ // do something with the response
-    case Failure(ex) ⇒ // do nothing
+    case Success(response) ⇒ println(s"The response $response") // do something with the response
+    case Failure(ex) ⇒ println(s"Error encountered: $ex") // do nothing
   }
+
+  // client.get("twitter", "tweet", "2") onSuccess {
+  // println(s"Attempting to get tweet with id = 2")
+  // }
 
   val data = """
   {
@@ -38,13 +41,15 @@ object Examples extends App {
   """
   // Indexing a document
   client.index("members", "member", data) onComplete {
-    case Success(response) ⇒ // do something with the response
-    case Failure(ex) ⇒ // do nothing
+    case Success(response) ⇒ println(s"Response $response") // do something with the response
+    case Failure(ex) ⇒ println(s"Failure with $ex.getMessage") // do nothing
   }
-  val id = "some arbitrary value"
+  // val id = "some arbitrary value"
   // Deleting a document
-  client.delete("members", "member", id) onComplete {
-    case Success(resp) ⇒ // do someting with the response
-    case Failure(ex) ⇒ // do nothing
-  }
+  // client.delete("members", "member", id) onComplete {
+  // case Success(resp) ⇒ // do someting with the response
+  // case Failure(ex) ⇒ // do nothing
+  // }
+  Thread.sleep(5000)
+  // client.shutdown()
 }

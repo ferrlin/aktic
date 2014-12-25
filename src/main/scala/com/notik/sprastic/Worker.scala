@@ -1,6 +1,6 @@
 package com.notik.sprastic
 
-import akka.actor.{ Actor, Props, ActorRef }
+import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
 import com.notik.sprastic.api.{ Index ⇒ ESIndex }
 import com.notik.sprastic.api.{ Update ⇒ ESUpdate }
 import com.notik.sprastic.api.{ Get ⇒ ESGet }
@@ -12,7 +12,7 @@ import com.notik.sprastic.ESActor.Response
 import scala.concurrent.Future
 import spray.client.pipelining._
 
-class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
+class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor with ActorLogging {
 
   import context._
 
@@ -36,9 +36,13 @@ class Worker(pipeline: Future[SendReceive], target: ActorRef) extends Actor {
       sendRequest(bulk.httpRequest)
       become(responseReceive)
   }
-
+  
+  import scala.util.{ Success, Failure }
   def sendRequest(req: HttpRequest) =
-    pipeline flatMap (_(req))
+    pipeline.flatMap(_(req)) onComplete {
+      case Success(res) ⇒ self ! res
+      case Failure(ex) ⇒ log.error(s"Failure with $ex.getMessage")
+    }
 
   def responseReceive: Receive = {
     case response: HttpResponse ⇒
