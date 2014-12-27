@@ -63,3 +63,50 @@ object Examples extends App {
   Thread.sleep(5000)
   // client.shutdown()
 }
+import java.util.Calendar
+object IndexingExample extends App {
+  val memberCount = 1000 * 1000
+  val client = SprasticClient()
+  val index = "members"
+  val typ = "member"
+  val rand = new java.util.Random
+  val averageTxCountPerMember = 10
+
+  val futures = (0 until memberCount) map { id ⇒
+    client.index(index, typ, createMember(id))
+  }
+
+  def createMember(id: Int): String = {
+    val age = 12 + rand.nextInt(50)
+    val bookCount = rand.nextInt(averageTxCountPerMember * 2)
+    implicit val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    val books = (0 until bookCount) map { createBook(_) }
+    s"""
+ 	{ 
+        "name": "Member $id", 
+        "age": $age,
+        "books": [ ${books.mkString(",")} ]
+    }
+ 	"""
+  }
+  def createBook(id: Int)(implicit dateFormat: java.text.SimpleDateFormat): String = {
+    val authors = List("ranicki", "klein", "lessing")
+    def randomAuthor(): String = authors(rand.nextInt(authors.size))
+    def randomDate(): String = {
+      val cal = Calendar.getInstance()
+      cal.set(Calendar.YEAR, 2014)
+      cal.set(Calendar.DAY_OF_MONTH, 1 + rand.nextInt(28))
+      cal.set(Calendar.MONTH, 1 + rand.nextInt(12))
+      var safe: Option[java.util.Date] = None
+      try {
+        safe = Some(cal.getTime)
+      } catch {
+        case _: Throwable ⇒ safe = Some(new java.util.Date)
+      }
+      dateFormat.format(safe.get)
+    }
+    val author = randomAuthor()
+    val date = randomDate()
+    s"""{"id":$id,"author":"$author","borrowedOn","$date"}"""
+  }
+}
