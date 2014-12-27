@@ -65,6 +65,10 @@ object Examples extends App {
 }
 import java.util.Calendar
 object IndexingExample extends App {
+
+  object Util {
+    implicit val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+  }
   val memberCount = 1000 * 1000
   val client = SprasticClient()
   val index = "members"
@@ -72,15 +76,15 @@ object IndexingExample extends App {
   val rand = new java.util.Random
   val averageTxCountPerMember = 10
 
-  val futures = (0 until memberCount) map { id ⇒
+  import Util._
+  val futures = (0 until 100) map { id ⇒
     client.index(index, typ, createMember(id))
   }
 
   def createMember(id: Int): String = {
     val age = 12 + rand.nextInt(50)
     val bookCount = rand.nextInt(averageTxCountPerMember * 2)
-    implicit val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    val books = (0 until bookCount) map { createBook(_) }
+    val books = (0 until bookCount) map createBook
     s"""
  	{ 
         "name": "Member $id", 
@@ -89,6 +93,7 @@ object IndexingExample extends App {
     }
  	"""
   }
+
   def createBook(id: Int)(implicit dateFormat: java.text.SimpleDateFormat): String = {
     val authors = List("ranicki", "klein", "lessing")
     def randomAuthor(): String = authors(rand.nextInt(authors.size))
@@ -97,16 +102,10 @@ object IndexingExample extends App {
       cal.set(Calendar.YEAR, 2014)
       cal.set(Calendar.DAY_OF_MONTH, 1 + rand.nextInt(28))
       cal.set(Calendar.MONTH, 1 + rand.nextInt(12))
-      var safe: Option[java.util.Date] = None
-      try {
-        safe = Some(cal.getTime)
-      } catch {
-        case _: Throwable ⇒ safe = Some(new java.util.Date)
-      }
-      dateFormat.format(safe.get)
+      dateFormat.format(cal.getTime)
     }
     val author = randomAuthor()
     val date = randomDate()
-    s"""{"id":$id,"author":"$author","borrowedOn","$date"}"""
+    s"""{"id":$id,"author":"$author","borrowedOn":"$date"}"""
   }
 }
