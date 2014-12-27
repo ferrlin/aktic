@@ -44,6 +44,16 @@ object Examples extends App {
     case Success(response) ⇒ println(s"Response $response") // do something with the response
     case Failure(ex) ⇒ println(s"Failure with $ex.getMessage") // do nothing
   }
+
+  val updatedData = """
+  {
+  	"status" : "updated"
+  }
+  """
+  client.update("members", "member", updatedData, "AUqBqA7Z6ldZWrFbDiVE") onComplete {
+    case Success(res) ⇒ println(s"Response with: $res")
+    case Failure(ex) ⇒ println(s"Failure with $ex.getMessage")
+  }
   // val id = "some arbitrary value"
   // Deleting a document
   // client.delete("members", "member", id) onComplete {

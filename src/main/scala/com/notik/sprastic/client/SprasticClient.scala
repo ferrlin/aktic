@@ -20,7 +20,10 @@ trait ApiService {
 
   def index(index: String, typ: String, document: String, id: Option[String] = None) =
     execute(Index(index, typ, document, id))
-    
+
+  def update(index: String, typ: String, document: String, id: String) =
+    execute(Update(index, typ, document, id))
+
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse]
 }
 
