@@ -77,7 +77,7 @@ object IndexingExample extends App {
   val averageTxCountPerMember = 10
 
   import Util._
-  val futures = (0 until 100) map { id ⇒
+  val futures = (0 until memberCount) map { id ⇒
     client.index(index, typ, createMember(id))
   }
 
