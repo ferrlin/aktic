@@ -10,3 +10,4 @@ addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")
 
 resolvers += Classpaths.sbtPluginReleases
 
+addSbtPlugin("com.typesafe.sbt" % "sbt-aspectj" % "0.10.1")

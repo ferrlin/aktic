@@ -83,6 +83,10 @@ case class Get(index: String, typ: String, id: String) extends ESOperation {
   def httpRequest = AGet(s"/$index/$typ/$id")
 }
 
+case class Search(index: String, params: Seq[String] = Seq.empty) extends ESOperation {
+  def httpRequest = if (params.nonEmpty) SGet(s"""/$index/_search?${params.mkString("&")}""") else SGet(s"/$index/_search")
+}
+
 sealed trait BulkSupport {
   def bulkJson: String
 }

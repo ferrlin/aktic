@@ -15,10 +15,6 @@ object Examples extends App {
     case Failure(ex) ⇒ println(s"Error encountered: $ex") // do nothing
   }
 
-  // client.get("twitter", "tweet", "2") onSuccess {
-  // println(s"Attempting to get tweet with id = 2")
-  // }
-
   val data = """
   {
     "member":{
@@ -37,7 +33,7 @@ object Examples extends App {
   }
   """
   // Indexing a document
-  client.index("members", "member", data) onComplete {
+  client.index("members", "member", data, None) onComplete {
     case Success(response) ⇒ println(s"Response $response") // do something with the response
     case Failure(ex) ⇒ println(s"Failure with $ex.getMessage") // do nothing
   }
@@ -60,23 +56,28 @@ object Examples extends App {
   Thread.sleep(5000)
   // client.shutdown()
 }
-import java.util.Calendar
+
 object IndexingExample extends App {
 
+  import java.util.Calendar
   object Util {
     implicit val dateformat = new java.text.SimpleDateFormat("yyyy-mm-dd")
   }
   // val memberCount = 1000 * 1000
   val memberCount = 100
   val client = Client()
+
   val index = "members"
   val typ = "member"
   val rand = new java.util.Random
   val averageTxCountPerMember = 10
 
   import Util._
+
+  // The Logic for indexing using sprastic
+  val client = SprasticClient()
   val futures = (0 until memberCount) map { id ⇒
-    client.index(index, typ, createMember(id))
+    client.index(index, typ, createMember(id), None)
   }
 
   def createMember(id: Int): String = {
@@ -84,12 +85,12 @@ object IndexingExample extends App {
     val bookCount = rand.nextInt(averageTxCountPerMember * 2)
     val books = (0 until bookCount) map createBook
     s"""
-  { 
-        "name": "Member $id", 
-        "age": $age,
-        "books": [ ${books.mkString(",")} ]
-    }
-  """
+    |{ 
+    |    "name": "Member $id", 
+    |    "age": $age,
+    |    "books": [ ${books.mkString(",")} ]
+    |}
+    """.stripMargin
   }
 
   def createBook(id: Int)(implicit dateFormat: java.text.SimpleDateFormat): String = {
@@ -105,5 +106,44 @@ object IndexingExample extends App {
     val author = randomAuthor()
     val date = randomDate()
     s"""{"id":$id,"author":"$author","borrowedOn":"$date"}"""
+  }
+}
+
+object CreateRetrieveDeleteFlowExample extends App {
+
+  import scala.concurrent.Future
+  import spray.http.HttpResponse
+  import scala.util.{ Failure, Success }
+
+  val client = SprasticClient()
+  val index = "CRDFlow".toLowerCase
+  val typ = "Example".toLowerCase
+
+  indexEntries()
+
+  Thread.sleep(10000)
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  retrieveAll() onComplete {
+    case Success(y) ⇒ println(s"All Documents ~~~~~ $y")
+    case Failure(x) ⇒ println(s"Failed $x")
+  }
+
+  def indexEntries(): Unit = {
+
+    // Index samples 
+    (1 to 10) map { id ⇒
+      client.index(index, typ, """{ "type":"testing" }""", None)
+    }
+  }
+
+  def retrieveAll(): Future[HttpResponse] = {
+    // Retrieve all added document to index
+    val future = client.getAll(index)
+    future
+  }
+
+  def deleteEntries(entryIds: Seq[String]): Unit = {
+
   }
 }
