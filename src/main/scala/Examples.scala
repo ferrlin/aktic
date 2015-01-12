@@ -124,13 +124,32 @@ object CreateRetrieveDeleteFlowExample extends App {
   Thread.sleep(10000)
   import scala.concurrent.ExecutionContext.Implicits.global
 
+  import argonaut._, Argonaut._
+
   retrieveAll() onComplete {
-    case Success(y) ⇒ println(s"All Documents ~~~~~ $y")
+    case Success(y) ⇒ {
+      println(s"All Documents ~~~~~ ${y.entity.data.asString}")
+      val jsonString = y.entity.data.asString // I don't know how to extract the data from HttpResponse yet
+      val json = Parse.parseOption(jsonString)
+      val hits2 = hits2Lens.get(json.get)
+      val ids = hits2.get.flatMap(hits2ArrayIdLens.get(_))
+      // We delete then the ids extracted
+      deleteEntries(ids)
+    }
     case Failure(x) ⇒ println(s"Failed $x")
   }
 
-  def indexEntries(): Unit = {
+  lazy val hits2Lens = jObjectPL >=>
+    jsonObjectPL("hits") >=>
+    jObjectPL >=>
+    jsonObjectPL("hits") >=>
+    jArrayPL
 
+  lazy val hits2ArrayIdLens = jObjectPL >=>
+    jsonObjectPL("_id") >=>
+    jStringPL
+
+  def indexEntries(): Unit = {
     // Index samples 
     (1 to 10) map { id ⇒
       client.index(index, typ, """{ "type":"testing" }""", None)
@@ -139,11 +158,11 @@ object CreateRetrieveDeleteFlowExample extends App {
 
   def retrieveAll(): Future[HttpResponse] = {
     // Retrieve all added document to index
-    val future = client.getAll(index)
-    future
+    client.getAll(index)
   }
 
   def deleteEntries(entryIds: Seq[String]): Unit = {
-
+    // individually delete the document with this id .. must have batch deletion
+    for (id ← entryIds) client.delete(index, typ, id)
   }
 }
