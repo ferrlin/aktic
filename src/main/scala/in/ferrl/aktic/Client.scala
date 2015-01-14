@@ -14,28 +14,25 @@ trait ApiService {
   implicit val timeout: FiniteDuration = 10 seconds
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def get: (String, String, String) ⇒ Future[HttpResponse] =
-    (index, typ, id) ⇒ execute(Get(index, typ, id))
+  def get(index: String, typ: String, id: String): Future[HttpResponse] =
+    execute(Get(index, typ, id))
 
-  def delete: (String, String, String) ⇒ Future[HttpResponse] =
-    (index, typ, id) ⇒ execute(Delete(index, typ, id))
+  def delete(index: String, typ: String, id: String): Future[HttpResponse] =
+    execute(Delete(index, typ, id))
 
-  // def index(index: String, typ: String, document: String, id: Option[String] = None) =
-  def index: (String, String, String, Option[String]) ⇒ Future[HttpResponse] =
-    (index, typ, document, id) ⇒ execute(Index(index, typ, document, id))
+  def index(index: String, typ: String, document: String, id: Option[String]): Future[HttpResponse] =
+    execute(Index(index, typ, document, id))
 
-  // def update(index: String, typ: String, document: String, id: String) =
-  def update: (String, String, String, String) ⇒ Future[HttpResponse] =
-    (index, typ, document, id) ⇒ execute(Update(index, typ, document, id))
+  def update(index: String, typ: String, document: String, id: String): Future[HttpResponse] =
+    execute(Update(index, typ, document, id))
 
-  def getAll: String ⇒ Future[HttpResponse] =
-    search(_, List.empty)
+  def getAll(index: String): Future[HttpResponse] =
+    search(index, List.empty)
 
-  def search: (String, Seq[String]) ⇒ Future[HttpResponse] =
-    (index, params) ⇒ execute(Search(index, params))
+  def search(index: String, params: Seq[String]): Future[HttpResponse] =
+    execute(Search(index, params))
 
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse]
-
 }
 
 class Client(config: Config = AkticConfig.defaultConfig) extends ApiService {

@@ -132,7 +132,7 @@ object CreateRetrieveDeleteFlowExample extends App {
       val jsonString = y.entity.data.asString // I don't know how to extract the data from HttpResponse yet
       val json = Parse.parseOption(jsonString)
       val hits2 = hits2Lens.get(json.get)
-      val ids = hits2.get.flatMap(hits2ArrayIdLens.get(_))
+      val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
       // We delete then the ids extracted
       deleteEntries(ids)
     }

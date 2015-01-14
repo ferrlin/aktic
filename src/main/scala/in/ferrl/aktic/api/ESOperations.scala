@@ -8,7 +8,7 @@ import akka.http.model.HttpRequest
 import scala.concurrent.ExecutionContext
 
 sealed trait ESOperation {
-  def httpRequest: HttpRequest
+  val httpRequest: HttpRequest
 }
 
 sealed trait OpType {
@@ -63,6 +63,7 @@ case class Update(index: String,
     """.stripMargin
   }*/
   def httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
+
 }
 
 case class Delete(index: String, typ: String, id: String) extends ESOperation /*with BulkSupport */ {
@@ -84,7 +85,7 @@ case class Get(index: String, typ: String, id: String) extends ESOperation {
 }
 
 case class Search(index: String, params: Seq[String] = Seq.empty) extends ESOperation {
-  def httpRequest = if (params.nonEmpty) SGet(s"""/$index/_search?${params.mkString("&")}""") else SGet(s"/$index/_search")
+  val httpRequest = if (params.nonEmpty) SGet(s"""/$index/_search?${params.mkString("&")}""") else SGet(s"/$index/_search")
 }
 
 sealed trait BulkSupport {
