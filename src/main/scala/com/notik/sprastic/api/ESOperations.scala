@@ -2,12 +2,13 @@ package com.notik.sprastic.api
 
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
+import akka.http.client.RequestBuilding.{ Put ⇒ APut }
+import akka.http.client.RequestBuilding.{ Post ⇒ APost }
+import akka.http.client.RequestBuilding.{ Get ⇒ AGet }
+import akka.http.client.RequestBuilding.{ Delete ⇒ ADelete }
+import akka.http.model.HttpRequest
 
-import spray.httpx.RequestBuilding.{ Put ⇒ SPut }
-import spray.httpx.RequestBuilding.{ Post ⇒ SPost }
-import spray.httpx.RequestBuilding.{ Get ⇒ SGet }
-import spray.httpx.RequestBuilding.{ Delete ⇒ SDelete }
-import spray.http.HttpRequest
+import scala.concurrent.ExecutionContext
 
 sealed trait ESOperation {
   def httpRequest: HttpRequest
@@ -24,7 +25,7 @@ case class Index(index: String,
   t: String,
   document: String,
   id: Option[String] = None,
-  opType: Option[OpType] = None)
+  opType: Option[OpType] = None)(implicit ec: ExecutionContext)
   extends ESOperation with BulkSupport {
 
   override def bulkJson: String = {
@@ -45,8 +46,8 @@ case class Index(index: String,
   }
 
   def httpRequest = id match {
-    case Some(_) ⇒ SPut(s"/$index/$t/$uri", document)
-    case _ ⇒ SPost(s"/$index/$t/$uri", document)
+    case Some(_) ⇒ APut(s"/$index/$t/$uri", document)
+    case _ ⇒ APost(s"/$index/$t/$uri", document)
   }
 }
 
@@ -54,7 +55,7 @@ case class Update(index: String,
   typ: String,
   document: String,
   id: String,
-  version: Option[Int] = None)
+  version: Option[Int] = None)(implicit ec: ExecutionContext)
   extends ESOperation with BulkSupport {
   override def bulkJson: String = {
     val actionAndMetadata = compact(render("update" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
@@ -64,7 +65,7 @@ case class Update(index: String,
       |$doc
     """.stripMargin
   }
-  def httpRequest = SPost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
+  def httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
 case class Delete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
@@ -74,22 +75,22 @@ case class Delete(index: String, typ: String, id: String) extends ESOperation wi
       |$actionAndMetadata
     """.stripMargin
   }
-  def httpRequest = SDelete(s"/$index/$typ/$id")
+  def httpRequest = ADelete(s"/$index/$typ/$id")
 }
 
 case class MultiGet(docs: Seq[Doc]) extends ESOperation {
-  def httpRequest = SGet("/_mget")
+  def httpRequest = AGet("/_mget")
 }
 
 case class Get(index: String, typ: String, id: String) extends ESOperation {
-  def httpRequest = SGet(s"/$index/$typ/$id")
+  def httpRequest = AGet(s"/$index/$typ/$id")
 }
 
 sealed trait BulkSupport {
   def bulkJson: String
 }
 
-case class Bulk(actions: Seq[BulkSupport]) {
+case class Bulk(actions: Seq[BulkSupport])(implicit ec: ExecutionContext) {
   lazy val json = actions.map(_.bulkJson).mkString("\n")
-  def httpRequest = SPost("/_bulk", json)
+  def httpRequest = APost("/_bulk", json)
 }

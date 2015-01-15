@@ -13,6 +13,7 @@ import com.notik.sprastic.config.SprasticConfig
 trait ApiService {
   import scala.concurrent.duration._
   implicit val timeout: FiniteDuration = 10 seconds
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   def get: (String, String, String) ⇒ Future[HttpResponse] = (index, typ, id) ⇒ execute(Get(index, typ, id))
 

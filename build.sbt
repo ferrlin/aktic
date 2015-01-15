@@ -34,7 +34,8 @@ scalacOptions <++= scalaVersion map { sv ⇒
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 
-val akka = "2.3.2"
+val akka = "2.3.8"
+val akkaStream = "1.0-M2"
 val spray = "1.3.2"
 
 libraryDependencies ++= Seq(
@@ -43,6 +44,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % akka % "test",
   "com.typesafe.akka" %% "akka-actor" % akka,
   "com.typesafe.akka" %% "akka-slf4j" % akka,
+  "com.typesafe.akka" %% "akka-http-experimental" % akkaStream,
+  "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
+  "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
   "io.argonaut" %% "argonaut" % "6.0.4",
   "io.spray" %% "spray-httpx" % spray,
   "io.spray" %% "spray-routing" % spray,

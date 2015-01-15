@@ -14,7 +14,9 @@ class ESOperationsSpec extends UnitSpec {
   import com.notik.sprastic.api.{ Delete ⇒ ESDelete }
   import com.notik.sprastic.api.{ Get ⇒ ESGet }
   import com.notik.sprastic.api.Create
-  import spray.httpx.RequestBuilding._
+  // import spray.httpx.RequestBuilding._
+  import akka.http.client.RequestBuilding._
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   "The Index case class" - {
     "when populated without an Id and criteria ie index=members;type=member;opType=Create" - {

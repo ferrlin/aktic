@@ -10,6 +10,7 @@ object Examples extends App {
 
   import scala.util.{ Success, Failure }
   import com.notik.sprastic.api._
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   val client = SprasticClient()
   // Retrieving a document
@@ -47,7 +48,7 @@ object Examples extends App {
 
   val updatedData = """
   {
-  	"status" : "updated"
+    "status" : "updated"
   }
   """
   client.update("members", "member", updatedData, "AUqBqA7Z6ldZWrFbDiVE") onComplete {
@@ -86,12 +87,12 @@ object IndexingExample extends App {
     val bookCount = rand.nextInt(averageTxCountPerMember * 2)
     val books = (0 until bookCount) map createBook
     s"""
- 	{ 
+  { 
         "name": "Member $id", 
         "age": $age,
         "books": [ ${books.mkString(",")} ]
     }
- 	"""
+  """
   }
 
   def createBook(id: Int)(implicit dateFormat: java.text.SimpleDateFormat): String = {
