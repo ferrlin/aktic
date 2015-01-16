@@ -1,18 +1,18 @@
-name := "sprastic"
+name := "aktic"
 
-organization := "com.notik"
+organization := "in.ferrl"
 
 version := "0.1.0"
 
-homepage := Some(url("https://github.com/levinotik/sprastic"))
+homepage := Some(url("https://github.com/ferrlin/aktic"))
 
 startYear := Some(2013)
 
 scmInfo := Some(
   ScmInfo(
-    url("https://github.com/levinotik/sprastic"),
-    "scm:git:https://github.com/levinotik/sprastic.git",
-    Some("scm:git:git@github.com:levinotik/sprastic.git")))
+    url("https://github.com/ferrlin/aktic"),
+    "scm:git:https://github.com/ferrlin/aktic.git",
+    Some("scm:git:git@github.com:ferrlin/aktic.git")))
 
 scalaVersion := "2.11.4"
 
@@ -47,12 +47,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-experimental" % akkaStream,
   "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
   "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
+  "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
   "io.argonaut" %% "argonaut" % "6.0.4",
-  "io.spray" %% "spray-httpx" % spray,
-  "io.spray" %% "spray-routing" % spray,
-  "io.spray" %% "spray-client" % spray,
-  "io.spray" %% "spray-can" % spray,
-  "io.spray" %% "spray-testkit" % spray % "test",
   "org.json4s" %% "json4s-jackson" % "3.2.9",
   "com.typesafe" % "config" % "1.2.0")
 

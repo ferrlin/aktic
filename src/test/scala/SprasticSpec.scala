@@ -1,4 +1,4 @@
-package com.notik.sprastic
+package in.ferrl.aktic
 
 import org.scalatest._
 import org.scalatest.matchers._
@@ -10,11 +10,10 @@ abstract class UnitSpec extends FreeSpec
   with Inspectors
 
 class ESOperationsSpec extends UnitSpec {
-  import com.notik.sprastic.api.{ Index ⇒ ESIndex }
-  import com.notik.sprastic.api.{ Delete ⇒ ESDelete }
-  import com.notik.sprastic.api.{ Get ⇒ ESGet }
-  import com.notik.sprastic.api.Create
-  // import spray.httpx.RequestBuilding._
+  import in.ferrl.aktic.api.{ Index ⇒ ESIndex }
+  import in.ferrl.aktic.api.{ Delete ⇒ ESDelete }
+  import in.ferrl.aktic.api.{ Get ⇒ ESGet }
+  import in.ferrl.aktic.api.Create
   import akka.http.client.RequestBuilding._
   import scala.concurrent.ExecutionContext.Implicits.global
 

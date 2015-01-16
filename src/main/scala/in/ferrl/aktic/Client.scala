@@ -1,17 +1,16 @@
-package com.notik.sprastic.client
+package in.ferrl.aktic
 
 import akka.actor.{ ActorSystem, ActorRefFactory, ActorRef }
-import com.notik.sprastic.ESActor
 import com.typesafe.config.{ ConfigFactory, Config }
-import com.notik.sprastic.api._
 import scala.concurrent.Future
-import spray.http.HttpResponse
+import akka.http.model.HttpResponse
 import akka.util.Timeout
-import scala.concurrent.duration.FiniteDuration
-import com.notik.sprastic.config.SprasticConfig
+import in.ferrl.aktic.config.AkticConfig
+import in.ferrl.aktic.api._
+import in.ferrl.aktic._
+import scala.concurrent.duration._
 
 trait ApiService {
-  import scala.concurrent.duration._
   implicit val timeout: FiniteDuration = 10 seconds
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -28,23 +27,19 @@ trait ApiService {
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse]
 }
 
-class SprasticClient(config: Config = SprasticConfig.defaultConfig) extends ApiService {
+class Client(config: Config = AkticConfig.defaultConfig) extends ApiService {
   import akka.pattern.ask
-  val system: ActorSystem = ActorSystem("sprastic-actor-system")
+  val system: ActorSystem = ActorSystem("aktic-system")
   def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[HttpResponse] =
     system.actorOf(ESActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[HttpResponse]
   def shutdown() = system.shutdown()
 }
 
-object SprasticClient {
-
+object Client {
   def apply(actorRefFactory: ActorRefFactory): ActorRef =
     actorRefFactory.actorOf(ESActor.props())
-
   def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef =
     actorRefFactory.actorOf(ESActor.props(config))
-
-  def apply(config: Config): SprasticClient = new SprasticClient(config)
-
-  def apply(): SprasticClient = new SprasticClient
+  def apply(config: Config): Client = new Client(config)
+  def apply(): Client = new Client
 }

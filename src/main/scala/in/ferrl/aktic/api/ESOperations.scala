@@ -1,13 +1,10 @@
-package com.notik.sprastic.api
+package in.ferrl.aktic.api
 
-import org.json4s.JsonDSL._
-import org.json4s.jackson.JsonMethods._
 import akka.http.client.RequestBuilding.{ Put ⇒ APut }
 import akka.http.client.RequestBuilding.{ Post ⇒ APost }
 import akka.http.client.RequestBuilding.{ Get ⇒ AGet }
 import akka.http.client.RequestBuilding.{ Delete ⇒ ADelete }
 import akka.http.model.HttpRequest
-
 import scala.concurrent.ExecutionContext
 
 sealed trait ESOperation {
@@ -26,9 +23,9 @@ case class Index(index: String,
   document: String,
   id: Option[String] = None,
   opType: Option[OpType] = None)(implicit ec: ExecutionContext)
-  extends ESOperation with BulkSupport {
+  extends ESOperation /*with BulkSupport*/ {
 
-  override def bulkJson: String = {
+  /*  override def bulkJson: String = {
     val action = opType match {
       case Some(Create) ⇒ "create"
       case _ ⇒ "index"
@@ -38,7 +35,7 @@ case class Index(index: String,
       |$actionAndMetadata
       |$document
     """.stripMargin
-  }
+  }*/
 
   lazy val uri = id match {
     case Some(x) ⇒ s"$x${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
@@ -56,25 +53,25 @@ case class Update(index: String,
   document: String,
   id: String,
   version: Option[Int] = None)(implicit ec: ExecutionContext)
-  extends ESOperation with BulkSupport {
-  override def bulkJson: String = {
+  extends ESOperation /*with BulkSupport */ {
+  /*  override def bulkJson: String = {
     val actionAndMetadata = compact(render("update" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
     val doc = s""" {"doc": $document} """
     s"""
       |$actionAndMetadata
       |$doc
     """.stripMargin
-  }
+  }*/
   def httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
-case class Delete(index: String, typ: String, id: String) extends ESOperation with BulkSupport {
-  override def bulkJson: String = {
+case class Delete(index: String, typ: String, id: String) extends ESOperation /*with BulkSupport */ {
+  /*  override def bulkJson: String = {
     val actionAndMetadata = compact(render("delete" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
     s"""
       |$actionAndMetadata
     """.stripMargin
-  }
+  }*/
   def httpRequest = ADelete(s"/$index/$typ/$id")
 }
 

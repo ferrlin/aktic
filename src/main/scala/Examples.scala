@@ -1,18 +1,14 @@
-package com.notik.sprastic
-
-import com.notik.sprastic.client._
-// import 
+import in.ferrl.aktic.Client
 
 object Examples extends App {
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
+  import scala.util.{ Success, Failure }
+  import in.ferrl.aktic.api._
   implicit val timeout: FiniteDuration = 5 minutes
 
-  import scala.util.{ Success, Failure }
-  import com.notik.sprastic.api._
-  import scala.concurrent.ExecutionContext.Implicits.global
+  val client = Client()
 
-  val client = SprasticClient()
   // Retrieving a document
   client.get("twitter", "tweet", "1") onComplete {
     case Success(response) ⇒ println(s"The response $response") // do something with the response
@@ -68,10 +64,11 @@ import java.util.Calendar
 object IndexingExample extends App {
 
   object Util {
-    implicit val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    implicit val dateformat = new java.text.SimpleDateFormat("yyyy-mm-dd")
   }
-  val memberCount = 1000 * 1000
-  val client = SprasticClient()
+  // val memberCount = 1000 * 1000
+  val memberCount = 100
+  val client = Client()
   val index = "members"
   val typ = "member"
   val rand = new java.util.Random
