@@ -85,7 +85,7 @@ case class Get(index: String, typ: String, id: String) extends ESOperation {
 }
 
 case class Search(index: String, params: Seq[String] = Seq.empty) extends ESOperation {
-  val httpRequest = if (params.nonEmpty) SGet(s"""/$index/_search?${params.mkString("&")}""") else SGet(s"/$index/_search")
+  val httpRequest = if (params.nonEmpty) AGet(s"""/$index/_search?${params.mkString("&")}""") else AGet(s"/$index/_search")
 }
 
 sealed trait BulkSupport {

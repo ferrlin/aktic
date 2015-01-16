@@ -73,9 +73,6 @@ object IndexingExample extends App {
   val averageTxCountPerMember = 10
 
   import Util._
-
-  // The Logic for indexing using sprastic
-  val client = SprasticClient()
   val futures = (0 until memberCount) map { id ⇒
     client.index(index, typ, createMember(id), None)
   }
@@ -112,10 +109,10 @@ object IndexingExample extends App {
 object CreateRetrieveDeleteFlowExample extends App {
 
   import scala.concurrent.Future
-  import spray.http.HttpResponse
+  import akka.http.model.HttpResponse
   import scala.util.{ Failure, Success }
 
-  val client = SprasticClient()
+  val client = Client()
   val index = "CRDFlow".toLowerCase
   val typ = "Example".toLowerCase
 
