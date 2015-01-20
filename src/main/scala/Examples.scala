@@ -5,7 +5,7 @@ object Examples extends App {
   import scala.concurrent.duration._
   import scala.util.{ Success, Failure }
   import in.ferrl.aktic.api._
-  implicit val timeout: FiniteDuration = 5 minutes
+  implicit val timeout: FiniteDuration = 5.minutes
 
   val client = Client()
 
@@ -119,14 +119,14 @@ object CreateRetrieveDeleteFlowExample extends App {
   indexEntries()
 
   Thread.sleep(10000)
-  import scala.concurrent.ExecutionContext.Implicits.global
 
+  import scala.concurrent.ExecutionContext.Implicits.global
   import argonaut._, Argonaut._
 
   retrieveAll() onComplete {
-    case Success(y) ⇒ {
-      println(s"All Documents ~~~~~ ${y.entity.data.asString}")
-      val jsonString = y.entity.data.asString // I don't know how to extract the data from HttpResponse yet
+    case Success(data) ⇒ {
+      println(s"All Documents ~~~~~ ${data}")
+      val jsonString = data
       val json = Parse.parseOption(jsonString)
       val hits2 = hits2Lens.get(json.get)
       val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
@@ -153,7 +153,7 @@ object CreateRetrieveDeleteFlowExample extends App {
     }
   }
 
-  def retrieveAll(): Future[HttpResponse] = {
+  def retrieveAll(): Future[String] = {
     // Retrieve all added document to index
     client.getAll(index)
   }

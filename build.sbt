@@ -22,7 +22,8 @@ scalacOptions ++= Seq(
 
 scalacOptions ++= Seq(
   "-Yclosure-elim",
-  "-Yinline")
+  "-Yinline",
+  "-feature")
 
 // These language flags will be used only for 2.10.x.
 // Uncomment those you need, or if you hate SIP-18, all of them.

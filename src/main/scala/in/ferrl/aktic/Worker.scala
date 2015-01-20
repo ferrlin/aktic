@@ -36,7 +36,7 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
       sendRequest(bulk.httpRequest)
   }
 
-  def sendRequest(req: HttpRequest) = {
+  def sendRequest(req: HttpRequest) {
     val responseFuture = send2ES(req)
     responseFuture map { resp ⇒
       resp match {
@@ -46,13 +46,13 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
     }
   }
 
-  type ErrorMessage = String
-  type ResponseData = String
+  import akka.stream.FlowMaterializer
+  implicit val mat = FlowMaterializer()(context)
 
-  def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseData]] = {
+  def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] = {
     pipeline(req).flatMap { response ⇒
       response.status match {
-        case OK ⇒ Unmarshal(response.entity).to[ResponseData].map(Right(_))
+        case OK ⇒ Unmarshal(response.entity).to[ResponseDataAsString].map(Right(_))
         case BadRequest ⇒ Future.successful(Left("Bad request.. Please check"))
         case _ ⇒ Unmarshal(response.entity).to[ErrorMessage].flatMap { entity ⇒
           val errorMsg = s"Request failed with status code ${response.status} and entity $entity"

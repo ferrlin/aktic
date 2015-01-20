@@ -11,6 +11,10 @@ sealed trait ESOperation {
   val httpRequest: HttpRequest
 }
 
+sealed trait BulkSupport {
+  def bulkJson: String
+}
+
 sealed trait OpType {
   def value: String
 }
@@ -25,24 +29,12 @@ case class Index(index: String,
   opType: Option[OpType] = None)(implicit ec: ExecutionContext)
   extends ESOperation /*with BulkSupport*/ {
 
-  /*  override def bulkJson: String = {
-    val action = opType match {
-      case Some(Create) ⇒ "create"
-      case _ ⇒ "index"
-    }
-    val actionAndMetadata = compact(render(action -> ("_index" -> index) ~ ("_type" -> t) ~ ("_id" -> id)))
-    s"""
-      |$actionAndMetadata
-      |$document
-    """.stripMargin
-  }*/
-
   lazy val uri = id match {
     case Some(x) ⇒ s"$x${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
     case None ⇒ s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
   }
 
-  def httpRequest = id match {
+  val httpRequest = id match {
     case Some(_) ⇒ APut(s"/$index/$t/$uri", document)
     case _ ⇒ APost(s"/$index/$t/$uri", document)
   }
@@ -54,45 +46,27 @@ case class Update(index: String,
   id: String,
   version: Option[Int] = None)(implicit ec: ExecutionContext)
   extends ESOperation /*with BulkSupport */ {
-  /*  override def bulkJson: String = {
-    val actionAndMetadata = compact(render("update" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
-    val doc = s""" {"doc": $document} """
-    s"""
-      |$actionAndMetadata
-      |$doc
-    """.stripMargin
-  }*/
-  def httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 
+  val httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
 case class Delete(index: String, typ: String, id: String) extends ESOperation /*with BulkSupport */ {
-  /*  override def bulkJson: String = {
-    val actionAndMetadata = compact(render("delete" -> ("_index" -> index) ~ ("_type" -> typ) ~ ("_id" -> id)))
-    s"""
-      |$actionAndMetadata
-    """.stripMargin
-  }*/
-  def httpRequest = ADelete(s"/$index/$typ/$id")
+  val httpRequest = ADelete(s"/$index/$typ/$id")
 }
 
 case class MultiGet(docs: Seq[Doc]) extends ESOperation {
-  def httpRequest = AGet("/_mget")
+  val httpRequest = AGet("/_mget")
 }
 
 case class Get(index: String, typ: String, id: String) extends ESOperation {
-  def httpRequest = AGet(s"/$index/$typ/$id")
+  val httpRequest = AGet(s"/$index/$typ/$id")
 }
 
 case class Search(index: String, params: Seq[String] = Seq.empty) extends ESOperation {
   val httpRequest = if (params.nonEmpty) AGet(s"""/$index/_search?${params.mkString("&")}""") else AGet(s"/$index/_search")
 }
 
-sealed trait BulkSupport {
-  def bulkJson: String
-}
-
 case class Bulk(actions: Seq[BulkSupport])(implicit ec: ExecutionContext) {
   lazy val json = actions.map(_.bulkJson).mkString("\n")
-  def httpRequest = APost("/_bulk", json)
+  val httpRequest = APost("/_bulk", json)
 }

@@ -30,10 +30,10 @@ class ESActor(config: Config) extends Actor {
 
   def receive = {
     // case Response(httpResponse, target) ⇒
-      // target ! httpResponse
-      case WithData(data, target) =>
+    // target ! httpResponse
+    case WithData(data, target) ⇒
       target ! data
-      case WithError(err , target)=>
+    case WithError(err, target) ⇒
       target ! err
     case msg ⇒
       context.actorOf(Worker.props(pipeline, sender)) ! msg
@@ -47,4 +47,6 @@ object ESActor {
   case class WithData(data: String, target: ActorRef)
   case class WithError(err: String, target: ActorRef)
 
+  type ErrorMessage = String
+  type ResponseDataAsString = String
 }
