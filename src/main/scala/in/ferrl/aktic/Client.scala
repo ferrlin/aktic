@@ -33,22 +33,23 @@ trait ApiService {
   def search(index: String, params: Seq[String]): Future[ResponseDataAsString] =
     execute(Search(index, params))
 
-  def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString]
+  protected[aktic] def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString]
 }
 
 class Client(config: Config = AkticConfig.defaultConfig) extends ApiService {
   import akka.pattern.ask
+
   val system: ActorSystem = ActorSystem("aktic-system")
-  def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
+
+  protected[aktic] def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
     system.actorOf(ESActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
+
   def shutdown() = system.shutdown()
 }
 
 object Client {
-  def apply(actorRefFactory: ActorRefFactory): ActorRef =
-    actorRefFactory.actorOf(ESActor.props())
-  def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef =
-    actorRefFactory.actorOf(ESActor.props(config))
+  def apply(actorRefFactory: ActorRefFactory): ActorRef = actorRefFactory.actorOf(ESActor.props())
+  def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef = actorRefFactory.actorOf(ESActor.props(config))
   def apply(config: Config): Client = new Client(config)
   def apply(): Client = new Client
 }

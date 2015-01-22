@@ -11,7 +11,6 @@ import akka.http.model.{ HttpRequest, HttpResponse }
 import scala.concurrent.Future
 import scala.util.{ Either, Left, Right }
 import akka.http.marshallers.sprayjson.SprayJsonSupport._
-// import akka.http.marshalling.ToResponseMarshallable
 import akka.http.unmarshalling.Unmarshal
 import akka.http.model.StatusCodes._
 import java.io.IOException
@@ -21,35 +20,29 @@ import spray.json.DefaultJsonProtocol
 class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor with ActorLogging with DefaultJsonProtocol {
   import context._
 
-  def receive = {
-    case i @ ESIndex(index, t, data, id, opType) ⇒
-      sendRequest(i.httpRequest)
-    case up @ ESUpdate(index, t, data, id, version) ⇒
-      sendRequest(up.httpRequest)
-    case get @ ESGet(index, t, id) ⇒
-      sendRequest(get.httpRequest)
-    case del @ ESDelete(index, t, id) ⇒
-      sendRequest(del.httpRequest)
-    case muget @ ESMultiGet(docs) ⇒
-      sendRequest(muget.httpRequest)
-    case bulk @ ESBulk(ops) ⇒
-      sendRequest(bulk.httpRequest)
+  def receive: Receive = receivedRequest andThen sendRequest
+
+  private def receivedRequest: PartialFunction[Any, HttpRequest] = {
+    case i @ ESIndex(index, t, data, id, opType) ⇒ i.httpRequest
+    case up @ ESUpdate(index, t, data, id, version) ⇒ up.httpRequest
+    case get @ ESGet(index, t, id) ⇒ get.httpRequest
+    case del @ ESDelete(index, t, id) ⇒ del.httpRequest
+    case muget @ ESMultiGet(docs) ⇒ muget.httpRequest
+    case bulk @ ESBulk(ops) ⇒ bulk.httpRequest
   }
 
-  def sendRequest(req: HttpRequest) {
-    val responseFuture = send2ES(req)
-    responseFuture map { resp ⇒
+  private def sendRequest(req: HttpRequest): Unit =
+    send2ES(req) map { resp ⇒
       resp match {
         case Right(data) ⇒ parent ! WithData(data, target)
         case Left(error) ⇒ parent ! WithError(error, target)
       }
     }
-  }
 
   import akka.stream.FlowMaterializer
   implicit val mat = FlowMaterializer()(context)
 
-  def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] = {
+  private def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] = {
     pipeline(req).flatMap { response ⇒
       response.status match {
         case OK ⇒ Unmarshal(response.entity).to[ResponseDataAsString].map(Right(_))

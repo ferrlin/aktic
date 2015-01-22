@@ -41,8 +41,7 @@ class ESActor(config: Config) extends Actor {
 }
 
 object ESActor {
-  def props(config: Config = AkticConfig.defaultConfig): Props =
-    Props(new ESActor(config))
+  def props(config: Config = AkticConfig.defaultConfig): Props = Props(new ESActor(config))
   // case class Response(httpResponse: HttpResponse, target: ActorRef)
   case class WithData(data: String, target: ActorRef)
   case class WithError(err: String, target: ActorRef)
