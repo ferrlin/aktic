@@ -10,10 +10,7 @@ abstract class UnitSpec extends FreeSpec
   with Inspectors
 
 class ESOperationsSpec extends UnitSpec {
-  import in.ferrl.aktic.api.{ Index ⇒ ESIndex }
-  import in.ferrl.aktic.api.{ Delete ⇒ ESDelete }
-  import in.ferrl.aktic.api.{ Get ⇒ ESGet }
-  import in.ferrl.aktic.api.Create
+  import in.ferrl.aktic.api.{ Index ⇒ ESIndex, Delete ⇒ ESDelete, Get ⇒ ESGet, Search ⇒ ESSearch, Create }
   import akka.http.client.RequestBuilding._
   import scala.concurrent.ExecutionContext.Implicits.global
 

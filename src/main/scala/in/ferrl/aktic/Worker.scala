@@ -1,5 +1,6 @@
 package in.ferrl.aktic
 
+import aktic._, Message._
 import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
 import in.ferrl.aktic.api.{ Index ⇒ ESIndex }
 import in.ferrl.aktic.api.{ Update ⇒ ESUpdate }
@@ -14,7 +15,6 @@ import akka.http.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.unmarshalling.Unmarshal
 import akka.http.model.StatusCodes._
 import java.io.IOException
-import in.ferrl.aktic.ESActor._
 import spray.json.DefaultJsonProtocol
 
 class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor with ActorLogging with DefaultJsonProtocol {
@@ -42,7 +42,7 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
   import akka.stream.FlowMaterializer
   implicit val mat = FlowMaterializer()(context)
 
-  private def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] = {
+  private def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] =
     pipeline(req).flatMap { response ⇒
       response.status match {
         case OK ⇒ Unmarshal(response.entity).to[ResponseDataAsString].map(Right(_))
@@ -54,10 +54,9 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
         }
       }
     }
-  }
+
 }
 
 object Worker {
-  def props(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) =
-    Props(new Worker(pipeline, target))
+  def props(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) = Props(new Worker(pipeline, target))
 }

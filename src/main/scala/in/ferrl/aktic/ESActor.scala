@@ -10,11 +10,11 @@ import akka.pattern.ask
 import akka.util.Timeout
 import akka.http.Http
 import akka.http.model.{ HttpRequest, HttpResponse }
+import aktic._, Message._
 import in.ferrl.aktic.config.AkticConfig
 
 class ESActor(config: Config) extends Actor {
 
-  import ESActor._
   import context.dispatcher
   import akka.stream.scaladsl.{ Sink, Source }
   import akka.stream.FlowMaterializer
@@ -43,9 +43,4 @@ class ESActor(config: Config) extends Actor {
 object ESActor {
   def props(config: Config = AkticConfig.defaultConfig): Props = Props(new ESActor(config))
   // case class Response(httpResponse: HttpResponse, target: ActorRef)
-  case class WithData(data: String, target: ActorRef)
-  case class WithError(err: String, target: ActorRef)
-
-  type ErrorMessage = String
-  type ResponseDataAsString = String
 }

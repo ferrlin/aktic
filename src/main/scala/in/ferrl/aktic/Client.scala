@@ -5,10 +5,9 @@ import com.typesafe.config.{ ConfigFactory, Config }
 import scala.concurrent.Future
 import akka.http.model.HttpResponse
 import akka.util.Timeout
+import aktic._
 import in.ferrl.aktic.config.AkticConfig
 import in.ferrl.aktic.api._
-import in.ferrl.aktic._
-import in.ferrl.aktic.ESActor._
 import scala.concurrent.duration._
 
 trait ApiService {
