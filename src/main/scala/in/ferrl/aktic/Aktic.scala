@@ -5,9 +5,9 @@ import com.typesafe.config.{ ConfigFactory, Config }
 import scala.concurrent.Future
 import akka.http.model.HttpResponse
 import akka.util.Timeout
-import aktic._
+import aktic.{ ResponseDataAsString, ErrorMessage }
 import in.ferrl.aktic.config.AkticConfig
-import in.ferrl.aktic.api._
+import in.ferrl.aktic.core._
 import scala.concurrent.duration._
 
 trait ApiService {
@@ -32,23 +32,22 @@ trait ApiService {
   def search(index: String, params: Seq[String]): Future[ResponseDataAsString] =
     execute(Search(index, params))
 
-  protected[aktic] def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString]
+  protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString]
 }
 
-class Client(config: Config = AkticConfig.defaultConfig) extends ApiService {
+class Aktic(config: Config = AkticConfig.defaultConfig) extends ApiService {
   import akka.pattern.ask
-
   val system: ActorSystem = ActorSystem("aktic-system")
 
-  protected[aktic] def execute(operation: ESOperation)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
-    system.actorOf(ESActor.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
+  protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
+    system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
 
   def shutdown() = system.shutdown()
 }
 
-object Client {
-  def apply(actorRefFactory: ActorRefFactory): ActorRef = actorRefFactory.actorOf(ESActor.props())
-  def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef = actorRefFactory.actorOf(ESActor.props(config))
-  def apply(config: Config): Client = new Client(config)
-  def apply(): Client = new Client
+object Aktic {
+  def apply(actorRefFactory: ActorRefFactory): ActorRef = actorRefFactory.actorOf(Dispatcher.props())
+  def apply(actorRefFactory: ActorRefFactory, config: Config): ActorRef = actorRefFactory.actorOf(Dispatcher.props(config))
+  def apply(config: Config): Aktic = new Aktic(config)
+  def apply(): Aktic = new Aktic
 }

@@ -1,4 +1,4 @@
-package in.ferrl.aktic
+package in.ferrl.aktic.core
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -13,7 +13,7 @@ import akka.http.model.{ HttpRequest, HttpResponse }
 import aktic._, Message._
 import in.ferrl.aktic.config.AkticConfig
 
-class ESActor(config: Config) extends Actor {
+class Dispatcher(config: Config) extends Actor {
 
   import context.dispatcher
   import akka.stream.scaladsl.{ Sink, Source }
@@ -40,7 +40,7 @@ class ESActor(config: Config) extends Actor {
   }
 }
 
-object ESActor {
-  def props(config: Config = AkticConfig.defaultConfig): Props = Props(new ESActor(config))
+object Dispatcher {
+  def props(config: Config = AkticConfig.defaultConfig): Props = Props(new Dispatcher(config))
   // case class Response(httpResponse: HttpResponse, target: ActorRef)
 }

@@ -1,13 +1,13 @@
-package in.ferrl.aktic
+package in.ferrl.aktic.core
 
 import aktic._, Message._
 import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
-import in.ferrl.aktic.api.{ Index ⇒ ESIndex }
-import in.ferrl.aktic.api.{ Update ⇒ ESUpdate }
-import in.ferrl.aktic.api.{ Get ⇒ ESGet }
-import in.ferrl.aktic.api.{ Delete ⇒ ESDelete }
-import in.ferrl.aktic.api.{ MultiGet ⇒ ESMultiGet }
-import in.ferrl.aktic.api.{ Bulk ⇒ ESBulk }
+import in.ferrl.aktic.core.{ Index ⇒ ESIndex }
+import in.ferrl.aktic.core.{ Update ⇒ ESUpdate }
+import in.ferrl.aktic.core.{ Get ⇒ ESGet }
+import in.ferrl.aktic.core.{ Delete ⇒ ESDelete }
+import in.ferrl.aktic.core.{ MultiGet ⇒ ESMultiGet }
+import in.ferrl.aktic.core.{ Bulk ⇒ ESBulk }
 import akka.http.model.{ HttpRequest, HttpResponse }
 import scala.concurrent.Future
 import scala.util.{ Either, Left, Right }
@@ -15,9 +15,9 @@ import akka.http.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.unmarshalling.Unmarshal
 import akka.http.model.StatusCodes._
 import java.io.IOException
-import spray.json.DefaultJsonProtocol
 
-class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor with ActorLogging with DefaultJsonProtocol {
+class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor
+  with ActorLogging {
   import context._
 
   def receive: Receive = receivedRequest andThen sendRequest

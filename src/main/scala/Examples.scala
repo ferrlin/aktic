@@ -1,13 +1,14 @@
-import in.ferrl.aktic.Client
+import in.ferrl.aktic.Aktic
 
 object Examples extends App {
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
   import scala.util.{ Success, Failure }
-  import in.ferrl.aktic.api._
+  import in.ferrl.aktic.core._
+
   implicit val timeout: FiniteDuration = 5.minutes
 
-  val client = Client()
+  val client = Aktic()
 
   // Retrieving a document
   client.get("twitter", "tweet", "1") onComplete {
@@ -65,7 +66,7 @@ object IndexingExample extends App {
   }
   // val memberCount = 1000 * 1000
   val memberCount = 100
-  val client = Client()
+  val client = Aktic()
 
   val index = "members"
   val typ = "member"
@@ -112,7 +113,7 @@ object CreateRetrieveDeleteFlowExample extends App {
   import akka.http.model.HttpResponse
   import scala.util.{ Failure, Success }
 
-  val client = Client()
+  val client = Aktic()
   val index = "CRDFlow".toLowerCase
   val typ = "Example".toLowerCase
 

@@ -1,4 +1,4 @@
-package in.ferrl.aktic.api
+package in.ferrl.aktic.core
 
 import akka.http.client.RequestBuilding.{ Put ⇒ APut }
 import akka.http.client.RequestBuilding.{ Post ⇒ APost }
@@ -7,7 +7,7 @@ import akka.http.client.RequestBuilding.{ Delete ⇒ ADelete }
 import akka.http.model.HttpRequest
 import scala.concurrent.ExecutionContext
 
-sealed trait ESOperation {
+sealed trait Operations {
   val httpRequest: HttpRequest
 }
 
@@ -27,7 +27,7 @@ case class Index(index: String,
   document: String,
   id: Option[String] = None,
   opType: Option[OpType] = None)(implicit ec: ExecutionContext)
-  extends ESOperation /*with BulkSupport*/ {
+  extends Operations /*with BulkSupport*/ {
 
   lazy val uri = id match {
     case Some(x) ⇒ s"$x${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
@@ -45,24 +45,24 @@ case class Update(index: String,
   document: String,
   id: String,
   version: Option[Int] = None)(implicit ec: ExecutionContext)
-  extends ESOperation /*with BulkSupport */ {
+  extends Operations /*with BulkSupport */ {
 
   val httpRequest = APost(s"/$index/$typ/$id${version.fold("")(v ⇒ s"?version=$v")}", document)
 }
 
-case class Delete(index: String, typ: String, id: String) extends ESOperation /*with BulkSupport */ {
+case class Delete(index: String, typ: String, id: String) extends Operations /*with BulkSupport */ {
   val httpRequest = ADelete(s"/$index/$typ/$id")
 }
 
-case class MultiGet(docs: Seq[Doc]) extends ESOperation {
+case class MultiGet(docs: Seq[Doc]) extends Operations {
   val httpRequest = AGet("/_mget")
 }
 
-case class Get(index: String, typ: String, id: String) extends ESOperation {
+case class Get(index: String, typ: String, id: String) extends Operations {
   val httpRequest = AGet(s"/$index/$typ/$id")
 }
 
-case class Search(index: String, params: Seq[String] = Seq.empty) extends ESOperation {
+case class Search(index: String, params: Seq[String] = Seq.empty) extends Operations {
   val httpRequest = if (params.nonEmpty) AGet(s"""/$index/_search?${params.mkString("&")}""") else AGet(s"/$index/_search")
 }
 
