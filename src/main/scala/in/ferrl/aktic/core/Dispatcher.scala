@@ -29,8 +29,6 @@ class Dispatcher(config: Config) extends Actor {
   val esConn = Http().outgoingConnection(config.getString("host"), config.getInt("port"))
 
   def receive = {
-    // case Response(httpResponse, target) ⇒
-    // target ! httpResponse
     case WithData(data, target) ⇒
       target ! data
     case WithError(err, target) ⇒
@@ -42,5 +40,4 @@ class Dispatcher(config: Config) extends Actor {
 
 object Dispatcher {
   def props(config: Config = AkticConfig.defaultConfig): Props = Props(new Dispatcher(config))
-  // case class Response(httpResponse: HttpResponse, target: ActorRef)
 }

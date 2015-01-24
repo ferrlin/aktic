@@ -37,7 +37,6 @@ trait ApiService {
 
 class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService {
   import akka.pattern.ask
-  // val system: ActorSystem = ActorSystem("aktic-system")
 
   protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
     system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
@@ -47,6 +46,7 @@ class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = 
 
 object Aktic {
   def apply(system: ActorSystem, config: Config) = new Aktic(system, config)
+  def apply(system: ActorSystem) = new Aktic(system = system)
   def apply(config: Config): Aktic = new Aktic(config = config)
   def apply(): Aktic = new Aktic
 }
