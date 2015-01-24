@@ -20,9 +20,9 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
   with ActorLogging {
   import context._
 
-  def receive: Receive = receivedRequest andThen sendRequest
+  def receive: Receive = prepare andThen send
 
-  private def receivedRequest: PartialFunction[Any, HttpRequest] = {
+  private def prepare: PartialFunction[Any, HttpRequest] = {
     case i @ ESIndex(index, t, data, id, opType) ⇒ i.httpRequest
     case up @ ESUpdate(index, t, data, id, version) ⇒ up.httpRequest
     case get @ ESGet(index, t, id) ⇒ get.httpRequest
@@ -31,7 +31,7 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
     case bulk @ ESBulk(ops) ⇒ bulk.httpRequest
   }
 
-  private def sendRequest(req: HttpRequest): Unit =
+  private def send(req: HttpRequest): Unit =
     send2ES(req) map { resp ⇒
       resp match {
         case Right(data) ⇒ parent ! WithData(data, target)
