@@ -119,19 +119,18 @@ object CreateRetrieveDeleteFlowExample extends App {
 
   indexEntries()
 
-  Thread.sleep(10000)
+  Thread.sleep(1000)
 
   import scala.concurrent.ExecutionContext.Implicits.global
   import argonaut._, Argonaut._
 
   retrieveAll() onComplete {
     case Success(data) ⇒ {
-      println(s"All Documents ~~~~~ ${data}")
       val jsonString = data
       val json = Parse.parseOption(jsonString)
       val hits2 = hits2Lens.get(json.get)
       val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
-      // We delete then the ids extracted
+      // We delete then the ids extracted 
       deleteEntries(ids)
     }
     case Failure(x) ⇒ println(s"Failed $x")
@@ -148,15 +147,14 @@ object CreateRetrieveDeleteFlowExample extends App {
     jStringPL
 
   def indexEntries(): Unit = {
-    // Index samples 
     (1 to 10) map { id ⇒
       client.index(index, typ, """{ "type":"testing" }""", None)
     }
   }
 
   def retrieveAll(): Future[String] = {
-    // Retrieve all added document to index
-    client.getAll(index)
+    println("Client to Get All documents")
+    client.search(index, List("size=20"))
   }
 
   def deleteEntries(entryIds: Seq[String]): Unit = {

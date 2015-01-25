@@ -21,22 +21,22 @@ class ESOperationsSpec extends UnitSpec {
         val t = "member"
         val opType = Some(Create)
         val doc = """
-      {
-        "member":{
-                "name" : {"type": "string", "index": "not_analyzed"},
-                "age" : {"type": "integer"},
-                "properties":{
-                  "books": {
-                    "type": "nested",
-                    "properties": {
-                      "author": {"type": "string"},
-                      "borrowedOn": {"type": "date"}
-                    }
-                  }
-                }
-              }
-      }
-      """
+        |{
+        | "member":{
+        |       "name" : {"type": "string", "index": "not_analyzed"},
+        |       "age" : {"type": "integer"},
+        |       "properties":{
+        |         "books": {
+        |           "type": "nested",
+        |           "properties": {
+        |           "author": {"type": "string"},
+        |           "borrowedOn": {"type": "date"}
+        |         }
+        |       }
+        |     }
+        | }
+        |}
+        """.stripMargin
         val indexMsg = ESIndex(index, t, doc, None, opType)
 
         val uri = s"${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"
@@ -53,22 +53,22 @@ class ESOperationsSpec extends UnitSpec {
         val opType = Some(Create)
         val x = Some("123")
         val doc = """
-      {
-        "member":{
-                "name" : {"type": "string", "index": "not_analyzed"},
-                "age" : {"type": "integer"},
-                "properties":{
-                  "books": {
-                    "type": "nested",
-                    "properties": {
-                      "author": {"type": "string"},
-                      "borrowedOn": {"type": "date"}
-                    }
-                  }
-                }
-              }
-      }
-      """
+        |{
+        | "member":{
+        |       "name" : {"type": "string", "index": "not_analyzed"},
+        |       "age" : {"type": "integer"},
+        |       "properties":{
+        |         "books": {
+        |           "type": "nested",
+        |           "properties": {
+        |           "author": {"type": "string"},
+        |           "borrowedOn": {"type": "date"}
+        |         }
+        |       }
+        |     }
+        | }
+        |}
+        """.stripMargin
         val indexMsg = ESIndex(index, t, doc, x, opType)
         val Some(sx) = x
         val uri = s"$sx${opType.map(op ⇒ s"?op_type=${op.value}").getOrElse("")}"

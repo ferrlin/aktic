@@ -2,8 +2,8 @@ package object aktic {
   object Message {
     import akka.actor.ActorRef
 
-    case class WithData(data: String, target: ActorRef)
-    case class WithError(err: String, target: ActorRef)
+    case class WithData(data: ResponseDataAsString, target: ActorRef)
+    case class WithError(err: ErrorMessage, target: ActorRef)
   }
 
   // Return types

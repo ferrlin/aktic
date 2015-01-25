@@ -9,6 +9,7 @@ import aktic.{ ResponseDataAsString, ErrorMessage }
 import in.ferrl.aktic.config.AkticConfig
 import in.ferrl.aktic.core._
 import scala.concurrent.duration._
+import akka.pattern.ask
 
 trait ApiService {
   implicit val timeout: FiniteDuration = 10.seconds
@@ -26,9 +27,6 @@ trait ApiService {
   def update(index: String, typ: String, document: String, id: String): Future[ResponseDataAsString] =
     execute(Update(index, typ, document, id))
 
-  def getAll(index: String): Future[ResponseDataAsString] =
-    search(index, List.empty)
-
   def search(index: String, params: Seq[String]): Future[ResponseDataAsString] =
     execute(Search(index, params))
 
@@ -36,7 +34,6 @@ trait ApiService {
 }
 
 class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService {
-  import akka.pattern.ask
 
   protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
     system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]

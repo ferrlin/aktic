@@ -8,6 +8,7 @@ import in.ferrl.aktic.core.{ Get ⇒ ESGet }
 import in.ferrl.aktic.core.{ Delete ⇒ ESDelete }
 import in.ferrl.aktic.core.{ MultiGet ⇒ ESMultiGet }
 import in.ferrl.aktic.core.{ Bulk ⇒ ESBulk }
+import in.ferrl.aktic.core.{ Search ⇒ ESSearch }
 import akka.http.model.{ HttpRequest, HttpResponse }
 import scala.concurrent.Future
 import scala.util.{ Either, Left, Right }
@@ -23,21 +24,21 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
   def receive: Receive = prepare andThen send
 
   private def prepare: PartialFunction[Any, HttpRequest] = {
-    case i @ ESIndex(index, t, data, id, opType) ⇒ i.httpRequest
-    case up @ ESUpdate(index, t, data, id, version) ⇒ up.httpRequest
-    case get @ ESGet(index, t, id) ⇒ get.httpRequest
-    case del @ ESDelete(index, t, id) ⇒ del.httpRequest
-    case muget @ ESMultiGet(docs) ⇒ muget.httpRequest
-    case bulk @ ESBulk(ops) ⇒ bulk.httpRequest
+    case i @ ESIndex(_, _, _, _, _) ⇒ i.httpRequest
+    case up @ ESUpdate(_, _, _, _, _) ⇒ up.httpRequest
+    case get @ ESGet(_, _, _) ⇒ get.httpRequest
+    case del @ ESDelete(_, _, _) ⇒ del.httpRequest
+    case muget @ ESMultiGet(_) ⇒ muget.httpRequest
+    case bulk @ ESBulk(_) ⇒ bulk.httpRequest
+    case search @ ESSearch(_, _) ⇒ search.httpRequest
   }
 
-  private def send(req: HttpRequest): Unit =
-    send2ES(req) map { resp ⇒
-      resp match {
-        case Right(data) ⇒ parent ! WithData(data, target)
-        case Left(error) ⇒ parent ! WithError(error, target)
-      }
-    }
+  private def send(req: HttpRequest): Unit = {
+    send2ES(req) flatMap {
+      case Right(data) ⇒ Future { WithData(data, target) }
+      case Left(error) ⇒ Future { WithError(error, target) }
+    } map { parent ! _ }
+  }
 
   import akka.stream.FlowMaterializer
   implicit val mat = FlowMaterializer()(context)
@@ -46,6 +47,7 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
     pipeline(req).flatMap { response ⇒
       response.status match {
         case OK ⇒ Unmarshal(response.entity).to[ResponseDataAsString].map(Right(_))
+        case Created ⇒ Unmarshal(response.entity).to[ResponseDataAsString].map(Right(_))
         case BadRequest ⇒ Future.successful(Left("Bad request.. Please check"))
         case _ ⇒ Unmarshal(response.entity).to[ErrorMessage].flatMap { entity ⇒
           val errorMsg = s"Request failed with status code ${response.status} and entity $entity"
@@ -54,7 +56,6 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
         }
       }
     }
-
 }
 
 object Worker {
