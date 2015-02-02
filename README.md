@@ -1,5 +1,7 @@
 ###Aktic - lightweight elasticsearch client built on Akka with Akka-http experimental module
 
+[![Build Status](https://travis-ci.org/ferrlin/aktic.svg?branch=master)](https://travis-ci.org/ferrlin/aktic)
+
 ###Getting started
 
 To use the api, you must first instantiate an `Aktic` instance which will serve as your elasticsearch client.
