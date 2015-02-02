@@ -43,11 +43,13 @@ object Examples extends App {
   {
     "status" : "updated"
   }
-  """
+  """.stripMargin
+
   client.update("members", "member", updatedData, "AUqBqA7Z6ldZWrFbDiVE") onComplete {
     case Success(res) ⇒ println(s"Response with: $res")
     case Failure(ex) ⇒ println(s"Failure with $ex.getMessage")
   }
+
   // val id = "some arbitrary value"
   // Deleting a document
   // client.delete("members", "member", id) onComplete {
@@ -55,7 +57,7 @@ object Examples extends App {
   // case Failure(ex) ⇒ // do nothing
   // }
   Thread.sleep(5000)
-  // client.shutdown()
+  client.shutdown()
 }
 
 object IndexingExample extends App {
@@ -64,7 +66,6 @@ object IndexingExample extends App {
   object Util {
     implicit val dateformat = new java.text.SimpleDateFormat("yyyy-mm-dd")
   }
-  // val memberCount = 1000 * 1000
   val memberCount = 100
   val client = Aktic()
 
@@ -130,7 +131,7 @@ object CreateRetrieveDeleteFlowExample extends App {
       val json = Parse.parseOption(jsonString)
       val hits2 = hits2Lens.get(json.get)
       val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
-      // We delete then the ids extracted 
+      // We then delete the ids extracted 
       deleteEntries(ids)
     }
     case Failure(x) ⇒ println(s"Failed $x")

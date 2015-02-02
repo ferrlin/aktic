@@ -38,7 +38,6 @@ javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 val akka = "2.3.8"
 val akkaStream = "1.0-M2"
 val spray = "1.3.2"
-val kamon = "0.3.5"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
@@ -53,24 +52,9 @@ libraryDependencies ++= Seq(
   "io.argonaut" %% "argonaut" % "6.0.4",
   "org.json4s" %% "json4s-jackson" % "3.2.9",
   "io.argonaut" %% "argonaut" % "6.0.4",
-  "com.typesafe" % "config" % "1.2.0",
-  "io.kamon" %% "kamon-core" % kamon,
-  "io.kamon" %% "kamon-statsd" % kamon,
-  "io.kamon" %% "kamon-log-reporter" % kamon,
-  "io.kamon" %% "kamon-system-metrics" % kamon,
-  "org.aspectj" % "aspectjweaver" % "1.8.4")
+  "com.typesafe" % "config" % "1.2.0")
 
 resolvers ++= Seq(
   "spray repo" at "http://repo.spray.io")
 
 packageArchetype.java_server
-
-//seq(Revolver.settings: _*)
-
-//aspectjSettings
-
-//javaOptions <++= AspectjKeys.weaverOptions in Aspectj
-
-// when you call "sbt run" aspectj weaving kicks in
-//fork in run := true
-
