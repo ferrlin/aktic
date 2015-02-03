@@ -27,8 +27,8 @@ trait ApiService {
   def delete(index: String, typ: String, id: String): Future[ResponseDataAsString] =
     execute(Delete(index, typ, id))
 
-  def index(id: String, document: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
-    execute(Index(docPath.index, docPath.typ, document, Some(id)))
+  def index(id: Option[String], document: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
+    execute(Index(docPath.index, docPath.typ, document, id))
 
   def index(index: String, typ: String, document: String, id: Option[String]): Future[ResponseDataAsString] =
     execute(Index(index, typ, document, id))

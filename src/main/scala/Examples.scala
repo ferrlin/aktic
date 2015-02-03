@@ -117,9 +117,13 @@ object CreateRetrieveDeleteFlowExample extends App {
   val client = Aktic()
   val index = "CRDFlow".toLowerCase
   val typ = "Example".toLowerCase
+  // automatically inject document path to our operations
+  import in.ferrl.aktic.core.DocPath
+  implicit val docPath = DocPath(index, typ)
 
+  // start indexing our entries
   indexEntries()
-
+ 
   Thread.sleep(1000)
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -149,7 +153,9 @@ object CreateRetrieveDeleteFlowExample extends App {
 
   def indexEntries(): Unit = {
     (1 to 10) map { id ⇒
-      client.index(index, typ, """{ "type":"testing" }""", None)
+      // client.index(index, typ, """{ "type":"testing" }""", None)
+      val id = None
+      client.index(id, """{ "type":"testing" }""")
     }
   }
 
@@ -160,6 +166,7 @@ object CreateRetrieveDeleteFlowExample extends App {
 
   def deleteEntries(entryIds: Seq[String]): Unit = {
     // individually delete the document with this id .. must have batch deletion
-    for (id ← entryIds) client.delete(index, typ, id)
+    // for (id ← entryIds) client.delete(index, typ, id)
+    for (id ← entryIds) client.delete(id)
   }
 }
