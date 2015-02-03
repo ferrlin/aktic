@@ -15,14 +15,26 @@ trait ApiService {
   implicit val timeout: FiniteDuration = 10.seconds
   import scala.concurrent.ExecutionContext.Implicits.global
 
+  def get(id: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
+    execute(Get(docPath.index, docPath.typ, id))
+
   def get(index: String, typ: String, id: String): Future[ResponseDataAsString] =
     execute(Get(index, typ, id))
+
+  def delete(id: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
+    execute(Delete(docPath.index, docPath.typ, id))
 
   def delete(index: String, typ: String, id: String): Future[ResponseDataAsString] =
     execute(Delete(index, typ, id))
 
+  def index(id: String, document: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
+    execute(Index(docPath.index, docPath.typ, document, Some(id)))
+
   def index(index: String, typ: String, document: String, id: Option[String]): Future[ResponseDataAsString] =
     execute(Index(index, typ, document, id))
+
+  def update(id: String, document: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
+    execute(Update(docPath.index, docPath.typ, document, id))
 
   def update(index: String, typ: String, document: String, id: String): Future[ResponseDataAsString] =
     execute(Update(index, typ, document, id))

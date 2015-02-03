@@ -54,7 +54,7 @@ case class Delete(index: String, typ: String, id: String) extends Operations /*w
   val httpRequest = ADelete(s"/$index/$typ/$id")
 }
 
-case class MultiGet(docs: Seq[Doc]) extends Operations {
+case class MultiGet(docs: Seq[DocPath]) extends Operations {
   val httpRequest = AGet("/_mget")
 }
 
