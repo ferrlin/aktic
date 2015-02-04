@@ -123,7 +123,7 @@ object CreateRetrieveDeleteFlowExample extends App {
 
   // start indexing our entries
   indexEntries()
- 
+
   Thread.sleep(1000)
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -137,6 +137,11 @@ object CreateRetrieveDeleteFlowExample extends App {
       val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
       // We then delete the ids extracted 
       deleteEntries(ids)
+
+      Thread.sleep(1000)
+
+      // close our client
+      // client.shutdown
     }
     case Failure(x) ⇒ println(s"Failed $x")
   }

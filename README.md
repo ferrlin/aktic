@@ -7,7 +7,7 @@
 To use the api, you must first instantiate an `Aktic` instance which will serve as your elasticsearch client.
 
 ```
-    val client = Aktic()
+val client = Aktic()
 ```
 
 By default, aktic retrieves configuration data from application.conf that comes along with the project that contains the following:
@@ -20,19 +20,99 @@ aktic {
 
 The Aktic class contains two other constructor where it receives an actorsystem , config instance or both.
 ```
-val clientWithActorSytem = Aktic(ActorSystem("hello"))
-
-val clientWithConfig = Aktic(***** example here *****)
+val client = Aktic(ActorSystem("hello"))
 ```
 
-When Aktic instance is successfully created, you can begin using the api. Here are ways to use the basic operations you can do:
+After successfully instantiating Aktic, you need to specify the index and type that will be used to identify the document you would want to operate on.
+
+This can be done by simply doing the following:
+```
+val index = "OurIndex"
+val typ = "OurType"
+```
+
+Another way of doing this is by defining a DocPath wrapping the data above.
+```
+implicit val docPath = DocPath("OurIndex", "OurType")
+```
+
+
+With everything setup, we can now start using the api. 
+
+The following will show you two ways of doing the succeeding operations.
 
 ###Indexing
- < more details to follow >
+
+```
+val id = Some("xba23")
+val document = """{}"""
+```
+
+#a
+```
+client.index(index, typ, document, id)
+
+// or if we want elasticsearch to provide the `id`
+client.index( index, typ, document, None)
+```
+
+#b
+```
+client.index(id, document)(docPath)
+
+// or simply
+client.index(id, document)
+```
+
+ >
 ###Updating
- < more details to follow >   
+
+#a
+```
+client.update(index, typ, document, id)
+```
+
+#b
+```
+client.update(id,document)(docPath)
+
+//or simply
+client.update(id, document)
+```
+
 ###Deleting
- < more details to follow >
-###Searching
- < more details to follow >
-< -- to be added later -- >
+
+#a
+```
+client.delete(index, typ, id)
+```
+
+#b
+```
+client.delete(id)(docPath)
+
+// or simply
+client.delete(id)
+```
+
+
+### Retrieving / Searching
+#a 
+```
+client.get(index, typ, id)
+
+client.search(index, Seq("size=20"))
+```
+
+#b
+```
+client.get(id)(docPath)
+
+// or simply
+client.get(id)
+```
+
+###
+
+###Roadmap
+ ...

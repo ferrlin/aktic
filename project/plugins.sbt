@@ -1,13 +1,7 @@
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
-
-//addSbtPlugin("com.typesafe.sbt" % "sbt-atmos" % "0.3.2")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "0.7.0-RC2")
-
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2")
 
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
-resolvers += Classpaths.sbtPluginReleases
+addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.6.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-aspectj" % "0.10.1")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.5")
