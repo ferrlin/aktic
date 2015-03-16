@@ -136,7 +136,7 @@ object CreateRetrieveDeleteFlowExample extends App {
       val hits2 = hits2Lens.get(json.get)
       val ids = hits2.get.flatMap(hits2ArrayIdLens.get)
       // We then delete the ids extracted 
-      deleteEntries(ids)
+      // deleteEntries(ids)
 
       Thread.sleep(1000)
 
@@ -160,7 +160,10 @@ object CreateRetrieveDeleteFlowExample extends App {
     (1 to 10) map { id ⇒
       // client.index(index, typ, """{ "type":"testing" }""", None)
       val id = None
-      client.index(id, """{ "type":"testing" }""")
+      client.index(id, """{ "type":"testing" }""") onComplete {
+        case Success(response) ⇒ println(s"After indexing the result is -> $response")
+        case Failure(err) ⇒ // do nothing
+      }
     }
   }
 

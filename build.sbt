@@ -4,7 +4,7 @@ name := "aktic"
 
 organization := "in.ferrl"
 
-version := "0.1.0"
+version := "0.1.1"
 
 useGpg := true
 
@@ -88,8 +88,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
   "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
   "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
-  "io.argonaut" %% "argonaut" % "6.0.4",
-  "org.json4s" %% "json4s-jackson" % "3.2.9",
   "io.argonaut" %% "argonaut" % "6.0.4",
   "com.typesafe" % "config" % "1.2.0")
 

@@ -29,10 +29,10 @@ class Dispatcher(config: Config) extends Actor with ActorLogging {
 
   def receive = {
     case WithData(data, target) ⇒
-      log.info(s"Receive with data  ~~~~ $data")
+      log.info(s"Receive with data")
       target ! data
     case WithError(err, target) ⇒
-      log.info(s"Receive with error ~~~~~ $err")
+      log.info(s"Receive with error")
       target ! err
     case msg ⇒
       context.actorOf(Worker.props(pipeline, sender)) ! msg
