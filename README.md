@@ -2,6 +2,9 @@
 
 [![Build Status](https://travis-ci.org/ferrlin/aktic.svg?branch=master)](https://travis-ci.org/ferrlin/aktic)
 
+```
+"in.ferrl" %% "aktic" % "0.1.3"
+```
 ###Getting started
 
 To use the api, you must first instantiate an `Aktic` instance which will serve as your elasticsearch client.

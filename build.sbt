@@ -4,7 +4,7 @@ name := "aktic"
 
 organization := "in.ferrl"
 
-version := "0.1.2"
+version := "0.1.3"
 
 useGpg := true
 
@@ -55,7 +55,7 @@ scmInfo := Some(
     "scm:git:https://github.com/ferrlin/aktic.git",
     Some("scm:git:git@github.com:ferrlin/aktic.git")))
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 scalacOptions ++= Seq(
   "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
