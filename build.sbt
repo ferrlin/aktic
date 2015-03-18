@@ -4,7 +4,7 @@ name := "aktic"
 
 organization := "in.ferrl"
 
-version := "0.1.1"
+version := "0.1.2"
 
 useGpg := true
 
@@ -14,17 +14,19 @@ homepage := Some(url("https://github.com/ferrlin/aktic"))
 
 startYear := Some(2013)
 
-publishTo <<= version { v: String ⇒
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
 publishMavenStyle := true
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if(isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
 
 publishArtifact in Test := false
 
-pomIncludeRepository := { x ⇒ false }
+pomIncludeRepository := { _ ⇒ false }
 
 pomExtra := (
   <url>https://github.com/ferrlin/</url>
