@@ -10,12 +10,6 @@ useGpg := true
 
 usePgpKeyHex("4D5CA6F0")
 
-homepage := Some(url("https://github.com/ferrlin/aktic"))
-
-startYear := Some(2013)
-
-publishMavenStyle := true
-
 publishTo := {
   val nexus = "https://oss.sonatype.org/"
   if(isSnapshot.value)
@@ -23,6 +17,8 @@ publishTo := {
   else
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
+
+publishMavenStyle := true
 
 publishArtifact in Test := false
 
