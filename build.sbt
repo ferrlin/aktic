@@ -49,12 +49,6 @@ pomExtra := (
       </developer>
   </developers>)
 
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/ferrlin/aktic"),
-    "scm:git:https://github.com/ferrlin/aktic.git",
-    Some("scm:git:git@github.com:ferrlin/aktic.git")))
-
 scalaVersion := "2.11.6"
 
 scalacOptions ++= Seq(
