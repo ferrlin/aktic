@@ -45,7 +45,7 @@ pomExtra := (
       </developer>
   </developers>)
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.5"
 
 scalacOptions ++= Seq(
   "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
