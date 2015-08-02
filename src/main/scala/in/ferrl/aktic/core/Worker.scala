@@ -2,19 +2,21 @@ package in.ferrl.aktic.core
 
 import aktic._, Message._
 import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
-import in.ferrl.aktic.core.{ Index ⇒ ESIndex }
-import in.ferrl.aktic.core.{ Update ⇒ ESUpdate }
-import in.ferrl.aktic.core.{ Get ⇒ ESGet }
-import in.ferrl.aktic.core.{ Delete ⇒ ESDelete }
-import in.ferrl.aktic.core.{ MultiGet ⇒ ESMultiGet }
-import in.ferrl.aktic.core.{ Bulk ⇒ ESBulk }
-import in.ferrl.aktic.core.{ Search ⇒ ESSearch }
-import akka.http.model.{ HttpRequest, HttpResponse }
+import in.ferrl.aktic.core.{
+  Index ⇒ ESIndex,
+  Update => ESUpdate,
+  Get => ESGet,
+  Delete => ESDelete,
+  MultiGet => ESMultiGet,
+  Bulk => ESBulk,
+  Search => ESSearch
+}
+import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import akka.http.scaladsl.model.StatusCodes._
 import scala.concurrent.Future
 import scala.util.{ Either, Left, Right }
-import akka.http.marshallers.sprayjson.SprayJsonSupport._
-import akka.http.unmarshalling.Unmarshal
-import akka.http.model.StatusCodes._
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import java.io.IOException
 
 class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor
@@ -24,13 +26,13 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
   def receive: Receive = prepare andThen send
 
   private def prepare: PartialFunction[Any, HttpRequest] = {
-    case i @ ESIndex(_, _, _, _, _) ⇒ i.httpRequest
-    case up @ ESUpdate(_, _, _, _, _) ⇒ up.httpRequest
-    case get @ ESGet(_, _, _) ⇒ get.httpRequest
-    case del @ ESDelete(_, _, _) ⇒ del.httpRequest
-    case muget @ ESMultiGet(_) ⇒ muget.httpRequest
-    case bulk @ ESBulk(_) ⇒ bulk.httpRequest
-    case search @ ESSearch(_, _) ⇒ search.httpRequest
+    case i: ESIndex => i.httpRequest
+    case up: ESUpdate => up.httpRequest
+    case get: ESGet => get.httpRequest
+    case del: ESDelete => del.httpRequest
+    case muget: ESMultiGet => muget.httpRequest
+    case bulk: ESBulk => bulk.httpRequest
+    case search: ESSearch => search.httpRequest
   }
 
   private def send(req: HttpRequest): Unit = {
@@ -40,8 +42,8 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
     } map { parent ! _ }
   }
 
-  import akka.stream.FlowMaterializer
-  implicit val mat = FlowMaterializer()(context)
+  import akka.stream.ActorMaterializer
+  implicit val mat = ActorMaterializer()(context)
 
   private def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] =
     pipeline(req).flatMap { response ⇒

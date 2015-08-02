@@ -3,7 +3,7 @@ package in.ferrl.aktic
 import akka.actor.{ ActorSystem, ActorRefFactory, ActorRef }
 import com.typesafe.config.{ ConfigFactory, Config }
 import scala.concurrent.Future
-import akka.http.model.HttpResponse
+import akka.http.scaladsl.model.HttpResponse
 import akka.util.Timeout
 import aktic.{ ResponseDataAsString, ErrorMessage }
 import in.ferrl.aktic.config.AkticConfig
@@ -46,11 +46,17 @@ trait ApiService {
 }
 
 class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService {
+  import kamon.Kamon
+
+  Kamon.start()
 
   protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
     system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
 
-  def shutdown() = system.shutdown()
+  def shutdown() = {
+    system.shutdown()
+    Kamon.shutdown()
+  }
 }
 
 object Aktic {

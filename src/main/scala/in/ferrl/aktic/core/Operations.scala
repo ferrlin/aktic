@@ -1,10 +1,12 @@
 package in.ferrl.aktic.core
 
-import akka.http.client.RequestBuilding.{ Put ⇒ APut }
-import akka.http.client.RequestBuilding.{ Post ⇒ APost }
-import akka.http.client.RequestBuilding.{ Get ⇒ AGet }
-import akka.http.client.RequestBuilding.{ Delete ⇒ ADelete }
-import akka.http.model.HttpRequest
+import akka.http.scaladsl.client.RequestBuilding.{
+  Put ⇒ APut,
+  Post => APost,
+  Get => AGet,
+  Delete => ADelete
+}
+import akka.http.scaladsl.model.HttpRequest
 import scala.concurrent.ExecutionContext
 
 sealed trait Operations {

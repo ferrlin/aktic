@@ -111,7 +111,7 @@ object IndexingExample extends App {
 object CreateRetrieveDeleteFlowExample extends App {
 
   import scala.concurrent.Future
-  import akka.http.model.HttpResponse
+  import akka.http.scaladsl.model.HttpResponse
   import scala.util.{ Failure, Success }
 
   val client = Aktic()

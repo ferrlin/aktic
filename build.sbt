@@ -12,7 +12,7 @@ usePgpKeyHex("4D5CA6F0")
 
 publishTo := {
   val nexus = "https://oss.sonatype.org/"
-  if(isSnapshot.value)
+  if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
@@ -45,7 +45,7 @@ pomExtra := (
       </developer>
   </developers>)
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
 scalacOptions ++= Seq(
   "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
@@ -67,7 +67,7 @@ scalacOptions <++= scalaVersion map { sv ⇒
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 
 val akka = "2.3.8"
-val akkaStream = "1.0-M2"
+val akkaStream = "1.0"
 val spray = "1.3.2"
 
 libraryDependencies ++= Seq(
@@ -81,6 +81,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
   "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
   "io.argonaut" %% "argonaut" % "6.0.4",
+  "io.kamon" %% "kamon-core" % "0.4.0",
   "com.typesafe" % "config" % "1.2.0")
 
 resolvers ++= Seq(

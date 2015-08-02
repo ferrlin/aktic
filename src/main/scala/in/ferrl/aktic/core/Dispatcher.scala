@@ -7,25 +7,25 @@ import com.typesafe.config.{ Config }
 import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
 import akka.io.IO
 import akka.util.Timeout
-import akka.http.Http
-import akka.http.model.{ HttpRequest, HttpResponse }
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import aktic._, Message._
 import in.ferrl.aktic.config.AkticConfig
 
 class Dispatcher(config: Config) extends Actor with ActorLogging {
 
   import context.dispatcher
-  import akka.stream.scaladsl.{ Sink, Source }
-  import akka.stream.FlowMaterializer
+  import akka.stream.scaladsl.{ Flow, Sink, Source }
+  import akka.stream.ActorMaterializer
 
   implicit val system = context.system
   implicit val timeout = 10.seconds
-  implicit val materializer = FlowMaterializer()
+  implicit val materializer = ActorMaterializer()
 
   def pipeline(request: HttpRequest): Future[HttpResponse] =
-    Source.single(request).via(esConn.flow).runWith(Sink.head)
+    Source.single(request).via(esConn).runWith(Sink.head)
 
-  val esConn = Http().outgoingConnection(config.getString("host"), config.getInt("port"))
+  val esConn: Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]] = Http().outgoingConnection(config.getString("host"), config.getInt("port"))
 
   def receive = {
     case WithData(data, target) ⇒
