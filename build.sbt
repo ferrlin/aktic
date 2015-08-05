@@ -4,18 +4,18 @@ name := "aktic"
 
 organization := "in.ferrl"
 
-version := "0.1.3"
+version := "0.1.4"
 
 useGpg := true
 
 usePgpKeyHex("4D5CA6F0")
 
 publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
 publishMavenStyle := true
@@ -25,7 +25,7 @@ publishArtifact in Test := false
 pomIncludeRepository := { _ ⇒ false }
 
 pomExtra := (
-  <url>https://github.com/ferrlin/</url>
+    <url>https://github.com/ferrlin/</url>
   <licenses>
     <license>
       <name>BSD-style</name>
@@ -48,20 +48,20 @@ pomExtra := (
 scalaVersion := "2.11.7"
 
 scalacOptions ++= Seq(
-  "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
-  )
+    "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
+    )
 
 scalacOptions ++= Seq(
-  "-Yclosure-elim",
-  "-Yinline",
-  "-feature")
+    "-Yclosure-elim",
+    "-Yinline",
+    "-feature")
 
 // These language flags will be used only for 2.10.x.
 // Uncomment those you need, or if you hate SIP-18, all of them.
 scalacOptions <++= scalaVersion map { sv ⇒
-  if (sv startsWith "2.10") List(
-    "-Xverify", "-Ywarn-all", "-feature", "-language:postfixOps")
-  else Nil
+    if (sv startsWith "2.10") List(
+        "-Xverify", "-Ywarn-all", "-feature", "-language:postfixOps")
+    else Nil
 }
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
@@ -71,18 +71,18 @@ val akkaStream = "1.0"
 val spray = "1.3.2"
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "ch.qos.logback" % "logback-classic" % "1.1.2",
-  "com.typesafe.akka" %% "akka-testkit" % akka % "test",
-  "com.typesafe.akka" %% "akka-actor" % akka,
-  "com.typesafe.akka" %% "akka-slf4j" % akka,
-  "com.typesafe.akka" %% "akka-http-experimental" % akkaStream,
-  "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
-  "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
-  "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
-  "io.argonaut" %% "argonaut" % "6.0.4",
-  "io.kamon" %% "kamon-core" % "0.4.0",
-  "com.typesafe" % "config" % "1.2.0")
+    "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+    "ch.qos.logback" % "logback-classic" % "1.1.2",
+    "com.typesafe.akka" %% "akka-testkit" % akka % "test",
+    "com.typesafe.akka" %% "akka-actor" % akka,
+    "com.typesafe.akka" %% "akka-slf4j" % akka,
+    "com.typesafe.akka" %% "akka-http-experimental" % akkaStream,
+    "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
+    "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
+    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
+    "io.argonaut" %% "argonaut" % "6.0.4",
+    "io.kamon" %% "kamon-core" % "0.4.0",
+    "com.typesafe" % "config" % "1.2.0")
 
 resolvers ++= Seq(
-  "spray repo" at "http://repo.spray.io")
+    "spray repo" at "http://repo.spray.io")
