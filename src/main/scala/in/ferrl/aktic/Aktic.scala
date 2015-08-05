@@ -11,9 +11,9 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 import akka.pattern.{ ask, AskTimeoutException }
 
-trait ApiService {
-    implicit val timeout: FiniteDuration = 10.seconds
-    import scala.concurrent.ExecutionContext.Implicits.global
+abstract class ApiService(config: ActorSystem) {
+
+    import config.dispatcher
 
     def get(id: String)(implicit docPath: DocPath): Future[ResponseDataAsString] =
         execute(Get(docPath.index, docPath.typ, id))
@@ -42,16 +42,15 @@ trait ApiService {
     def search(index: String, params: Seq[String]): Future[ResponseDataAsString] =
         execute(Search(index, params))
 
-    protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString]
+    protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration = 1.second): Future[ResponseDataAsString]
 }
 
-class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService {
+class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService(system) {
     import java.io.IOException
     import kamon.Kamon
+    implicit val ec = system.dispatcher
 
     Kamon.start()
-
-    implicit val ec = system.dispatcher
 
     protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
         system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]

@@ -11,6 +11,7 @@ import in.ferrl.aktic.core.{
     Bulk ⇒ ESBulk,
     Search ⇒ ESSearch
 }
+import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import akka.http.scaladsl.model.StatusCodes._
 import akka.pattern.AskTimeoutException
@@ -24,19 +25,12 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
     with ActorLogging {
     import context.dispatcher
     import context.parent
-    import akka.stream.ActorMaterializer
     implicit val mat = ActorMaterializer()
 
     def receive: Receive = prepare andThen send
 
     private def prepare: PartialFunction[Any, HttpRequest] = {
-        case i: ESIndex ⇒ i.httpRequest
-        case up: ESUpdate ⇒ up.httpRequest
-        case get: ESGet ⇒ get.httpRequest
-        case del: ESDelete ⇒ del.httpRequest
-        case muget: ESMultiGet ⇒ muget.httpRequest
-        case bulk: ESBulk ⇒ bulk.httpRequest
-        case search: ESSearch ⇒ search.httpRequest
+        case ops: Operations ⇒ ops.httpRequest
     }
 
     private def send(req: HttpRequest): Unit = {
