@@ -24,7 +24,6 @@ class Dispatcher(config: Config) extends Actor with ActorLogging {
     import akka.stream.ActorMaterializer
 
     implicit val system = context.system
-    implicit val timeout = 10.seconds
     implicit val materializer = ActorMaterializer()
 
     def pipeline(request: HttpRequest): Future[HttpResponse] =

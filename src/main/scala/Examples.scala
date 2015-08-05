@@ -17,22 +17,22 @@ object Examples extends App {
     }
 
     val data = """
-  {
-    "member":{
-            "name" : {"type": "string", "index": "not_analyzed"},
-            "age" : {"type": "integer"},
-            "properties":{
-              "books": {
-                "type": "nested",
-                "properties": {
-                  "author": {"type": "string"},
-                  "borrowedOn": {"type": "date"}
-                }
-              }
-            }
-          }
-  }
-  """
+  |{
+  |  "member":{
+  |          "name" : {"type": "string", "index": "not_analyzed"},
+  |          "age" : {"type": "integer"},
+  |          "properties":{
+  |            "books": {
+  |              "type": "nested",
+  |              "properties": {
+  |                "author": {"type": "string"},
+  |                "borrowedOn": {"type": "date"}
+  |              }
+  |            }
+  |          }
+  |        }
+  |}
+  """.stripMargin
     // Indexing a document
     client.index("members", "member", data, None) onComplete {
         case Success(response) ⇒ println(s"Response $response") // do something with the response
@@ -40,9 +40,9 @@ object Examples extends App {
     }
 
     val updatedData = """
-  {
-    "status" : "updated"
-  }
+  |{
+  |  "status" : "updated"
+  |}
   """.stripMargin
 
     client.update("members", "member", updatedData, "AUqBqA7Z6ldZWrFbDiVE") onComplete {
