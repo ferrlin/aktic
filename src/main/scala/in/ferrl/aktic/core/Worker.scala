@@ -22,7 +22,10 @@ import java.io.IOException
 
 class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) extends Actor
     with ActorLogging {
-    import context._
+    import context.dispatcher
+    import context.parent
+    import akka.stream.ActorMaterializer
+    implicit val mat = ActorMaterializer()
 
     def receive: Receive = prepare andThen send
 
@@ -42,9 +45,6 @@ class Worker(pipeline: HttpRequest ⇒ Future[HttpResponse], target: ActorRef) e
             case Left(error) ⇒ Future { WithError(error, target) }
         } map { parent ! _ }
     }
-
-    import akka.stream.ActorMaterializer
-    implicit val mat = ActorMaterializer()(context)
 
     private def send2ES(req: HttpRequest): Future[Either[ErrorMessage, ResponseDataAsString]] =
         pipeline(req).flatMap { response ⇒
