@@ -1,7 +1,6 @@
 package in.ferrl.aktic
 
 import akka.actor.{ ActorSystem, ActorRefFactory, ActorRef }
-import com.typesafe.config.{ ConfigFactory, Config }
 import akka.http.scaladsl.model.HttpResponse
 import akka.util.Timeout
 import aktic.{ ResponseDataAsString, ErrorMessage }
@@ -10,6 +9,7 @@ import in.ferrl.aktic.config.AkticConfig
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import akka.pattern.{ ask, AskTimeoutException }
+import com.typesafe.config.{ ConfigFactory, Config }
 
 abstract class ApiService(config: ActorSystem) {
 
@@ -45,26 +45,30 @@ abstract class ApiService(config: ActorSystem) {
     protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration = 1.second): Future[ResponseDataAsString]
 }
 
-class Aktic(system: ActorSystem = ActorSystem("aktic-system"), config: Config = AkticConfig.defaultConfig) extends ApiService(system) {
+class Aktic(system: ActorSystem = ActorSystem("aktic-system"),
+    config: Config = AkticConfig.defaultConfig) extends ApiService(system) {
     import java.io.IOException
     import kamon.Kamon
     implicit val ec = system.dispatcher
-
     Kamon.start()
 
-    protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] =
+    protected[aktic] def execute(operation: Operations)(implicit timeout: FiniteDuration): Future[ResponseDataAsString] = {
         system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
             .recoverWith {
                 case _: AskTimeoutException ⇒
                     val msg = "Can't access elastic server."
                     Future.failed(new IOException(msg))
             }
+    }
+
+    sys.addShutdownHook(shutdown())
 
     def shutdown() = {
         system.shutdown()
         system.awaitTermination()
-        Kamon.shutdown()
     }
+
+    Kamon.shutdown()
 }
 
 object Aktic {

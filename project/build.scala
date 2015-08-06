@@ -1,19 +1,23 @@
 import sbt._
 import Keys._
 
-object build extends Build {
+object Build {
+    object Settings {
+        val root: Seq[Setting[_]] = Defaults.defaultConfigs ++ Seq(
+            version in ThisBuild := "0.1.5")
 
-  val gcsettings = Defaults.defaultSettings
+        val project = Defaults.defaultConfigs ++
+            Defaults.itSettings ++
+            BaseSettings.baseSettings ++
+            BaseSettings.projectSettings ++
+            PublishSettings.publishSettings ++
+            Classpaths.ivyPublishSettings ++ Classpaths.jvmPublishSettings
+    }
 
-  val gc = TaskKey[Unit]("gc", "runs garbage collector")
-  val gcTask = gc := {
-    println("requesting garbage collection")
-    System gc()
-  }
-
-  lazy val project = Project (
-    "project",
-    file("."),
-    settings = gcsettings ++ Seq(gcTask)
-  )
+    def generateVersion(major: String, minor: String, snapshot: Boolean) = {
+        // Include the git version sha in the build version for repeatable historical builds.
+        val gitHeadCommitSha = settingKey[String]("current git commit SHA")
+        val incremental = Process("git rev-parse HEAD").lines.head
+        s"$major.$minor-$incremental${if (snapshot) "-SNAPSHOT"}"
+    }
 }

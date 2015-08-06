@@ -1,88 +1,28 @@
-import sbtrelease._
+import sbt._
+import Keys._
 
 name := "aktic"
 
-organization := "in.ferrl"
+// Configuration information used to classify tests based on the time they take to run
+lazy val LongRunningTest = config("long") extend Test
+lazy val ShortRunningTest = config("short") extend Test
 
-version := "0.1.4"
+// List of tests that require extra running time (used by CI to stage testing runs)
+val longRunningTests = Seq(
+    "in.ferrl.aktic.OperationsSpec")
 
-useGpg := true
+// Aktic
+lazy val core = project.in(file("core"))
 
-usePgpKeyHex("4D5CA6F0")
+// Example
+lazy val example = project.in(file("sample")).dependsOn(core)
 
-publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
+fork in Test := false
 
-publishMavenStyle := true
+fork in IntegrationTest := false
 
-publishArtifact in Test := false
+parallelExecution in Test := false
 
-pomIncludeRepository := { _ ⇒ false }
+publishLocal := {}
 
-pomExtra := (
-    <url>https://github.com/ferrlin/</url>
-  <licenses>
-    <license>
-      <name>BSD-style</name>
-      <url>http://www.opensource.org/licenses/bsd-license.php</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <url>https://github.com/ferrlin/aktic.git</url>
-    <connection>scm:git:https://github.com/ferrlin/aktic.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>ferrlin</id>
-      <name>John Ferrolino</name>
-      <url>http://blog.ferrl.in</url>
-      </developer>
-  </developers>)
-
-scalaVersion := "2.11.7"
-
-scalacOptions ++= Seq(
-    "-deprecation", "-unchecked", "-encoding", "UTF-8", "-target:jvm-1.7", "-Xlint" // "-optimise"   // this option will slow your build
-    )
-
-scalacOptions ++= Seq(
-    "-Yclosure-elim",
-    "-Yinline",
-    "-feature")
-
-// These language flags will be used only for 2.10.x.
-// Uncomment those you need, or if you hate SIP-18, all of them.
-scalacOptions <++= scalaVersion map { sv ⇒
-    if (sv startsWith "2.10") List(
-        "-Xverify", "-Ywarn-all", "-feature", "-language:postfixOps")
-    else Nil
-}
-
-javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
-
-val akka = "2.3.8"
-val akkaStream = "1.0"
-val spray = "1.3.2"
-
-libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-    "ch.qos.logback" % "logback-classic" % "1.1.2",
-    "com.typesafe.akka" %% "akka-testkit" % akka % "test",
-    "com.typesafe.akka" %% "akka-actor" % akka,
-    "com.typesafe.akka" %% "akka-slf4j" % akka,
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaStream,
-    "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStream,
-    "com.typesafe.akka" %% "akka-stream-experimental" % akkaStream,
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStream,
-    "io.argonaut" %% "argonaut" % "6.0.4",
-    "io.kamon" %% "kamon-core" % "0.4.0",
-    "com.typesafe" % "config" % "1.2.0")
-
-resolvers ++= Seq(
-    "spray repo" at "http://repo.spray.io")
+publish := {}
