@@ -56,7 +56,7 @@ class Aktic(system: ActorSystem = ActorSystem("aktic-system"),
         system.actorOf(Dispatcher.props(config)).ask(operation)(Timeout(timeout)).mapTo[ResponseDataAsString]
             .recoverWith {
                 case _: AskTimeoutException ⇒
-                    val msg = "Can't access elastic server."
+                    val msg = "Can't access external resource. Please check your connection."
                     Future.failed(new IOException(msg))
             }
     }

@@ -2,7 +2,7 @@ import Dependencies._
 
 Build.Settings.project
 
-name := "core"
+name := "aktic-core"
 
 libraryDependencies ++= Seq(
     akka.actor,

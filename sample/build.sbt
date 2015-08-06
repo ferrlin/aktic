@@ -2,8 +2,4 @@ import Dependencies._
 
 Build.Settings.project
 
-name := "sample"
-
-libraryDependencies ++= Seq(
-)
-
+name := "aktic-sample"
