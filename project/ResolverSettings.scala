@@ -5,7 +5,5 @@ object ResolverSettings {
         Resolver.defaultLocal,
         Resolver.mavenLocal,
         Resolver.sonatypeRepo("releases"),
-        Resolver.typesafeRepo("releases"),
-        Resolver.typesafeRepo("snapshots"),
-        Resolver.sonatypeRepo("snapshots"))
+        Resolver.typesafeRepo("releases"))
 }
